@@ -1,5 +1,7 @@
 package nl.erikduisters.popularmovies;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,12 +14,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
-//TODO: Add sort order to menu
 //TODO: Make sure app does not crash when there is no internet connection
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG_MOVIE_LIST_FRAGMENT = "MovieListFragment";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fragmentPlaceholder) FrameLayout fragmentPlaceholder;
 
     private Unbinder unbinder;
 
@@ -29,6 +30,17 @@ public class MainActivity extends AppCompatActivity {
         unbinder = ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Fragment fragment = fragmentManager.findFragmentByTag(TAG_MOVIE_LIST_FRAGMENT);
+
+        if (fragment == null) {
+            fragmentManager
+                    .beginTransaction()
+                    .add(R.id.fragmentPlaceholder, MovieListFragment.newInstance(), TAG_MOVIE_LIST_FRAGMENT)
+                    .commit();
+        }
     }
 
     @Override

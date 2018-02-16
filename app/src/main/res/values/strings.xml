@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">PopularMovies</string>
     <string name="about">About</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="sort_order">Sort Order</string>
+    <string name="highest_rated">Highest Rated</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="prefs_sort_by_highest_rated" translatable="false">SortByHighestRated</string>
 </resources>
