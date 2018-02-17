@@ -1,10 +1,10 @@
 package nl.erikduisters.popularmovies;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +18,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import nl.erikduisters.popularmovies.data.local.PreferenceManager;
 
 /**
  * Created by Erik Duisters on 16-02-2018.
@@ -77,8 +78,7 @@ public class MovieListFragment extends Fragment {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        SharedPreferences sharedPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean sortByHighestRated = sharedPreferences.getBoolean(getString(R.string.prefs_sort_by_highest_rated), false);
+        boolean sortByHighestRated = PreferenceManager.instance(getContext()).getSortByHighestRated();
 
         menu.findItem(R.id.menu_highestRated).setChecked(sortByHighestRated);
         menu.findItem(R.id.menu_mostPopular).setChecked(!sortByHighestRated);
@@ -87,19 +87,27 @@ public class MovieListFragment extends Fragment {
     //TODO: Fetch the correctly sorted movie list from TMDB
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        SharedPreferences sharedPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(getContext());
+        PreferenceManager preferenceManager = PreferenceManager.instance(getContext());
 
         switch (item.getItemId()) {
             case R.id.menu_highestRated:
-                sharedPreferences.edit().putBoolean(getString(R.string.prefs_sort_by_highest_rated), true).apply();
-                getActivity().invalidateOptionsMenu();
+                preferenceManager.setSortByHighestRated(true);
+                invalidateOptionsMenu();
                 break;
             case R.id.menu_mostPopular:
-                sharedPreferences.edit().putBoolean(getString(R.string.prefs_sort_by_highest_rated), false).apply();
-                getActivity().invalidateOptionsMenu();
+                preferenceManager.setSortByHighestRated(false);
+                invalidateOptionsMenu();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void invalidateOptionsMenu() {
+        FragmentActivity activity = getActivity();
+
+        if (activity != null) {
+            activity.invalidateOptionsMenu();
+        }
     }
 }

@@ -22,8 +22,6 @@ public class MyApplication extends Application {
         } else {
             Timber.plant(new ReleaseTree());
         }
-
-        android.preference.PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, true);
     }
 
     private static class ReleaseTree extends Timber.Tree {
