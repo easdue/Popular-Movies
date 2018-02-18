@@ -1,20 +1,21 @@
-package nl.erikduisters.popularmovies;
+package nl.erikduisters.popularmovies.ui.activity.main_activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import nl.erikduisters.popularmovies.R;
+import nl.erikduisters.popularmovies.ui.BaseActivity;
+import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragment;
 import timber.log.Timber;
 
 //TODO: Make sure app does not crash when there is no internet connection
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG_MOVIE_LIST_FRAGMENT = "MovieListFragment";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -24,9 +25,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        unbinder = ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
 
@@ -43,12 +41,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
+    protected int getLayoutResId() {
+        return R.layout.activity_main;
     }
 
     @Override

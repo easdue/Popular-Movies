@@ -1,13 +1,8 @@
 package nl.erikduisters.popularmovies.data.remote;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import nl.erikduisters.popularmovies.data.model.Configuration;
+import nl.erikduisters.popularmovies.data.model.TMDBMovieResponse;
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -21,24 +16,9 @@ public interface TMDBService {
     @GET("configuration")
     Call<Configuration> getConfiguration(@Query("api_key") String api_key);
 
-    class Provider {
-        private static TMDBService tmdbService;
+    @GET("movie/popular")
+    Call<TMDBMovieResponse> getPopularMovies(@Query("api_key") String api_key);
 
-        public static TMDBService getTMDBService() {
-            if (tmdbService == null) {
-                Gson gson = new GsonBuilder()
-                        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                        .create();
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create(gson))
-                        .build();
-
-                tmdbService = retrofit.create(TMDBService.class);
-            }
-
-            return tmdbService;
-        }
-    }
+    @GET("movie/top_rated")
+    Call<TMDBMovieResponse> getTopRatedMovies(@Query("api_key") String api_key);
 }

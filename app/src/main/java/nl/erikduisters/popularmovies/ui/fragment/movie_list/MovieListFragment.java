@@ -1,9 +1,8 @@
-package nl.erikduisters.popularmovies;
+package nl.erikduisters.popularmovies.ui.fragment.movie_list;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,21 +14,24 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.PreferenceManager;
+import nl.erikduisters.popularmovies.ui.BaseFragment;
 
 /**
  * Created by Erik Duisters on 16-02-2018.
  */
 
-public class MovieListFragment extends Fragment {
+public class MovieListFragment extends BaseFragment {
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.textView) TextView textView;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
-    private Unbinder unbinder;
+    @Inject
+    PreferenceManager preferenceManager;
 
     public MovieListFragment() {}
 
@@ -47,9 +49,7 @@ public class MovieListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_movie_list, container, false);
-
-        unbinder = ButterKnife.bind(this, v);
+        View v = super.onCreateView(inflater, container, savedInstanceState);
 
         progressBar.setVisibility(View.VISIBLE);
         textView.setText(R.string.loading);
@@ -59,12 +59,8 @@ public class MovieListFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
-
-        super.onDestroyView();
+    protected int getLayoutResId() {
+        return R.layout.fragment_movie_list;
     }
 
     @Override
@@ -78,7 +74,7 @@ public class MovieListFragment extends Fragment {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        boolean sortByHighestRated = PreferenceManager.instance(getContext()).getSortByHighestRated();
+        boolean sortByHighestRated = preferenceManager.getSortByHighestRated();
 
         menu.findItem(R.id.menu_highestRated).setChecked(sortByHighestRated);
         menu.findItem(R.id.menu_mostPopular).setChecked(!sortByHighestRated);
@@ -87,8 +83,6 @@ public class MovieListFragment extends Fragment {
     //TODO: Fetch the correctly sorted movie list from TMDB
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        PreferenceManager preferenceManager = PreferenceManager.instance(getContext());
-
         switch (item.getItemId()) {
             case R.id.menu_highestRated:
                 preferenceManager.setSortByHighestRated(true);
