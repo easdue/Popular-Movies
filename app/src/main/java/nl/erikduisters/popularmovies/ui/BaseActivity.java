@@ -1,5 +1,7 @@
 package nl.erikduisters.popularmovies.ui;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -13,13 +15,19 @@ import butterknife.Unbinder;
 import dagger.android.AndroidInjection;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
+import nl.erikduisters.popularmovies.MyViewModelFactory;
 
 /**
  * Created by Erik Duisters on 04-12-2017.
  */
-public abstract class BaseActivity extends AppCompatActivity implements HasSupportFragmentInjector {
+public abstract class BaseActivity<VM extends ViewModel> extends AppCompatActivity implements HasSupportFragmentInjector {
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+
+    @Inject
+    MyViewModelFactory viewModelFactory;
+
+    protected VM viewModel;
 
     private boolean isFragmentStateLocked;
 
@@ -35,9 +43,12 @@ public abstract class BaseActivity extends AppCompatActivity implements HasSuppo
         unbinder = ButterKnife.bind(this);
 
         isFragmentStateLocked = true;
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
     }
 
     protected abstract @LayoutRes int getLayoutResId();
+    protected abstract Class<VM> getViewModelClass();
 
     @Override
     public DispatchingAndroidInjector<Fragment> supportFragmentInjector() {

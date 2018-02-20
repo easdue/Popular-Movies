@@ -1,6 +1,8 @@
 package nl.erikduisters.popularmovies.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,22 +15,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.android.support.AndroidSupportInjection;
+import nl.erikduisters.popularmovies.MyViewModelFactory;
 
 /**
  * Created by Erik Duisters on 04-12-2017.
  */
 
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment<VM extends ViewModel> extends Fragment {
     @Nullable
     Unbinder unbinder;
+
+    @Inject
+    MyViewModelFactory viewModelFactory;
+
+    protected VM viewModel;
 
     @Override
     public void onAttach(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             AndroidSupportInjection.inject(this);
+            viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
         }
 
         super.onAttach(context);
@@ -39,6 +50,7 @@ public abstract class BaseFragment extends Fragment {
     public void onAttach(Activity activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             AndroidSupportInjection.inject(this);
+            viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
         }
 
         super.onAttach(activity);
@@ -56,6 +68,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected abstract @LayoutRes int getLayoutResId();
+    protected abstract Class<VM> getViewModelClass();
 
     @Override
     public void onDestroyView() {

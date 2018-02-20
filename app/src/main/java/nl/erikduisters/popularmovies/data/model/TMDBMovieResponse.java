@@ -1,5 +1,8 @@
 package nl.erikduisters.popularmovies.data.model;
 
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,4 +14,13 @@ public class TMDBMovieResponse {
     private List<Movie> results;
     private int totalResults;
     private int totalPages;
+
+    public @NonNull
+    List<Movie> getResults() {
+        if (results == null) {
+            return new ArrayList<>();
+        }
+
+        return results;
+    }
 }

@@ -1,26 +1,31 @@
 package nl.erikduisters.popularmovies.ui.activity.main_activity;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.List;
+
 import butterknife.BindView;
-import butterknife.Unbinder;
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.ui.BaseActivity;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragment;
+import nl.erikduisters.popularmovies.util.MenuUtil;
+import nl.erikduisters.popularmovies.util.MyMenuItem;
 import timber.log.Timber;
 
 //TODO: Make sure app does not crash when there is no internet connection
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity<MainActivityViewModel> {
     private static final String TAG_MOVIE_LIST_FRAGMENT = "MovieListFragment";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-    private Unbinder unbinder;
+    private List<MyMenuItem> optionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +43,18 @@ public class MainActivity extends BaseActivity {
                     .add(R.id.fragmentPlaceholder, MovieListFragment.newInstance(), TAG_MOVIE_LIST_FRAGMENT)
                     .commit();
         }
+
+        viewModel.getViewState().observe(this, this::render);
     }
 
     @Override
     protected int getLayoutResId() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected Class<MainActivityViewModel> getViewModelClass() {
+        return MainActivityViewModel.class;
     }
 
     @Override
@@ -54,17 +66,31 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
+        super.onPrepareOptionsMenu(menu);
+
+        MenuUtil.updateMenu(menu, optionsMenu);
+
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_about:
-                //TODO: Show about dialog that gives credit to TMDB
+                //TODO: Show about dialog that gives credit to TMDB and any other library that requires that
                 Timber.d("About was clicked");
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void render(@Nullable MainActivityViewState viewState) {
+        if (viewState == null) {
+            return;
+        }
+
+        optionsMenu = viewState.optionsMenu;
+
+        invalidateOptionsMenu();
     }
 }
