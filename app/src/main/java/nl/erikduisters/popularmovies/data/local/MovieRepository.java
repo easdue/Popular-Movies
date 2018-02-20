@@ -17,6 +17,7 @@ import nl.erikduisters.popularmovies.data.model.Movie;
 import nl.erikduisters.popularmovies.data.model.TMDBMovieResponse;
 import nl.erikduisters.popularmovies.data.remote.TMDBService;
 import retrofit2.Call;
+import timber.log.Timber;
 
 /**
  * Created by Erik Duisters on 18-02-2018.
@@ -42,23 +43,33 @@ public class MovieRepository {
     }
 
     public void getPopularMovies(Callback callback) {
-        if (movieList != null && sortOrder == SortOrder.POPULARITY) {
-            callback.onResponse(movieList);
-        } else {
-            enqueue(tmdbService.getPopularMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.POPULARITY));
-        }
+        getMoviesBySortOrder(SortOrder.POPULARITY, callback);
     }
 
     public void getTopRatedMovies(Callback callback) {
-        if (movieList != null && sortOrder == SortOrder.TOP_RATED) {
+        getMoviesBySortOrder(SortOrder.TOP_RATED, callback);
+    }
+
+    private void getMoviesBySortOrder(@SortOrder int sortOrder, Callback callback) {
+        Timber.d("getMoviesBySortOrder(%s)", sortOrder == SortOrder.TOP_RATED ? "TopRated" : "Popularity");
+
+        if (movieList != null && this.sortOrder == sortOrder) {
             callback.onResponse(movieList);
-        } else {
-            enqueue(tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.TOP_RATED));
+        }
+
+        switch (sortOrder) {
+            case SortOrder.POPULARITY:
+                enqueue(tmdbService.getPopularMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.POPULARITY));
+                break;
+            case SortOrder.TOP_RATED:
+                enqueue(tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.TOP_RATED));
+                break;
         }
     }
 
     private void cancelPendingCall() {
         if (call != null && !call.isCanceled()) {
+            Timber.d("Cancelling pending call");
             call.cancel();
         }
     }
@@ -81,6 +92,8 @@ public class MovieRepository {
 
         @Override
         public void onResponse(@NonNull Call<TMDBMovieResponse> call, @NonNull retrofit2.Response<TMDBMovieResponse> response) {
+            Timber.d("onResponse()");
+
             if (response.isSuccessful()) {
                 TMDBMovieResponse tmdbMovieResponse = response.body();
 
@@ -99,6 +112,7 @@ public class MovieRepository {
 
         @Override
         public void onFailure(@NonNull Call<TMDBMovieResponse> call, @NonNull Throwable t) {
+            Timber.d("onFailure()");
             //TODO: Properly handle this (eg. when is this exactly called?)
             callback.onError(R.string.tmdb_api_call_failure, t.getMessage());
         }
