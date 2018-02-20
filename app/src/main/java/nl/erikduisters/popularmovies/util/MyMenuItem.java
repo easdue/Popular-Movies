@@ -8,9 +8,9 @@ import android.support.annotation.IdRes;
 
 public class MyMenuItem {
     public final @IdRes int id;
-    boolean enabled;
-    boolean visible;
-    boolean checked;
+    public boolean enabled;
+    public boolean visible;
+    public boolean checked;
 
     public MyMenuItem(@IdRes int id) {
         this(id, true, true, false);

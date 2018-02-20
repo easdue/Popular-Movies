@@ -1,28 +1,21 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_list;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import nl.erikduisters.popularmovies.R;
-import nl.erikduisters.popularmovies.data.local.MovieRepository;
-import nl.erikduisters.popularmovies.data.local.PreferenceManager;
 import nl.erikduisters.popularmovies.ui.BaseFragment;
 import nl.erikduisters.popularmovies.util.MenuUtil;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
@@ -36,11 +29,6 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.textView) TextView textView;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
-
-    @Inject
-    PreferenceManager preferenceManager;
-    @Inject
-    MovieRepository movieRepository;
 
     private List<MyMenuItem> optionsMenu;
 
@@ -113,25 +101,20 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         MenuUtil.updateMenu(menu, optionsMenu);
     }
 
-    //TODO: Fetch the correctly sorted movie list from TMDB
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected");
 
         switch (item.getItemId()) {
             case R.id.menu_highestRated:
-                //TODO: Move this to the ViewModel
-                preferenceManager.setSortByHighestRated(true);
-                invalidateOptionsMenu();
-                break;
             case R.id.menu_mostPopular:
-                //TODO: Move this to the ViewModel
-                preferenceManager.setSortByHighestRated(false);
-                invalidateOptionsMenu();
+                viewModel.setSortOrder(item.getItemId());
+                return true;
+            default:
                 break;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     private void invalidateOptionsMenu() {

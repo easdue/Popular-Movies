@@ -79,9 +79,10 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> {
             case R.id.menu_about:
                 //TODO: Show about dialog that gives credit to TMDB and any other library that requires that
                 Timber.d("About was clicked");
+                return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     private void render(@Nullable MainActivityViewState viewState) {
