@@ -21,4 +21,36 @@ public class Movie {
     private int voteCount;
     private boolean video;
     private float vote_average;
+
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public float getVoteAverage() {
+        return vote_average;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
+    }
+
+    public float getPopularity() {
+        return popularity;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
 }
