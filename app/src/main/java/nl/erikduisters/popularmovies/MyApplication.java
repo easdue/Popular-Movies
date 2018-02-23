@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.support.annotation.NonNull;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-
 import javax.inject.Inject;
 
 import dagger.android.DispatchingAndroidInjector;
@@ -24,8 +22,6 @@ public class MyApplication extends Application implements HasActivityInjector {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Fresco.initialize(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

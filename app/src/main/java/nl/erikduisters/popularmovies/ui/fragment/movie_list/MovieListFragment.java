@@ -1,13 +1,17 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_list;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,6 +20,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import nl.erikduisters.popularmovies.R;
+import nl.erikduisters.popularmovies.data.model.Movie;
+import nl.erikduisters.popularmovies.data.model.Status;
 import nl.erikduisters.popularmovies.ui.BaseFragment;
 import nl.erikduisters.popularmovies.util.MenuUtil;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
@@ -25,12 +31,14 @@ import timber.log.Timber;
  * Created by Erik Duisters on 16-02-2018.
  */
 
-public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> {
+public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> implements MovieAdapter.OnItemClickListener {
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.textView) TextView textView;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
     private List<MyMenuItem> optionsMenu;
+    private MovieAdapter movieAdapter;
+    private GridLayoutManager layoutManager;
 
     public MovieListFragment() {}
 
@@ -46,7 +54,32 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
 
         optionsMenu = new ArrayList<>();
 
-        viewModel.getViewState().observe(this, this::render);
+        viewModel.getMovieViewState().observe(this, this::render);
+        viewModel.getStartActivityViewState().observe(this, this::render);
+
+        movieAdapter = new MovieAdapter();
+        movieAdapter.setOnItemClickListener(this);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, container, savedInstanceState);
+
+        layoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(movieAdapter);
+
+        return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        movieAdapter.setOnItemClickListener(null);
     }
 
     @Override
@@ -59,7 +92,7 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         return MovieListFragmentViewModel.class;
     }
 
-    private void render(@Nullable MovieListFragmentViewState viewState) {
+    private void render(@Nullable MovieListFragmentViewState.MovieViewState viewState) {
         if (viewState == null) {
             return;
         }
@@ -67,24 +100,35 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         optionsMenu = viewState.optionsMenu;
         invalidateOptionsMenu();
 
-        if (viewState.status == MovieListFragmentViewState.Status.SUCCESS) {
+        if (viewState.status == Status.SUCCESS) {
             progressBar.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
 
-            //TODO: set adapter data
+            layoutManager.setSpanCount(viewModel.getSpanCount());
+            movieAdapter.setMovieList(viewState.movieList);
         }
 
-        if (viewState.status == MovieListFragmentViewState.Status.LOADING) {
+        if (viewState.status == Status.LOADING) {
             progressBar.setVisibility(View.VISIBLE);
             textView.setVisibility(View.VISIBLE);
             textView.setText(R.string.loading);
         }
 
-        if (viewState.status == MovieListFragmentViewState.Status.ERROR) {
+        if (viewState.status == Status.ERROR) {
             progressBar.setVisibility(View.GONE);
             textView.setVisibility(View.VISIBLE);
             textView.setText(getString(viewState.errorLabel, viewState.errorArgument));
         }
+    }
+
+    private void render(@Nullable MovieListFragmentViewState.StartActivityViewState viewState) {
+        if (viewState == null) {
+            return;
+        }
+
+        startActivity(viewState.getIntent(getContext()));
+
+        viewModel.onActivityStarted();
     }
 
     @Override
@@ -108,7 +152,7 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         switch (item.getItemId()) {
             case R.id.menu_highestRated:
             case R.id.menu_mostPopular:
-                viewModel.setSortOrder(item.getItemId());
+                viewModel.onMenuItemClicked(item.getItemId());
                 return true;
             default:
                 break;
@@ -123,5 +167,10 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         if (activity != null) {
             activity.invalidateOptionsMenu();
         }
+    }
+
+    @Override
+    public void onItemClick(Movie movie) {
+        viewModel.onMovieClicked(movie);
     }
 }

@@ -2,6 +2,7 @@ package nl.erikduisters.popularmovies.data.local;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import java.lang.annotation.Retention;
@@ -25,6 +26,8 @@ import timber.log.Timber;
 
 @Singleton
 public class MovieRepository {
+    public static final int INVALID_MOVIE_ID = -1;
+
     @IntDef({SortOrder.POPULARITY, SortOrder.TOP_RATED})
     @Retention(RetentionPolicy.SOURCE)
     private @interface SortOrder {
@@ -33,24 +36,26 @@ public class MovieRepository {
     }
 
     private TMDBService tmdbService;
+    private PreferenceManager preferenceManager;
     private List<Movie> movieList;
     private @SortOrder int sortOrder;
     private Call<TMDBMovieResponse> call;
 
     @Inject
-    MovieRepository(TMDBService tmdbService) {
+    MovieRepository(TMDBService tmdbService, PreferenceManager preferenceManager) {
         this.tmdbService = tmdbService;
+        this.preferenceManager = preferenceManager;
     }
 
-    public void getPopularMovies(Callback callback) {
+    public void getPopularMovies(Callback<List<Movie>> callback) {
         getMoviesBySortOrder(SortOrder.POPULARITY, callback);
     }
 
-    public void getTopRatedMovies(Callback callback) {
+    public void getTopRatedMovies(Callback<List<Movie>> callback) {
         getMoviesBySortOrder(SortOrder.TOP_RATED, callback);
     }
 
-    private void getMoviesBySortOrder(@SortOrder int sortOrder, Callback callback) {
+    private void getMoviesBySortOrder(@SortOrder int sortOrder, Callback<List<Movie>> callback) {
         Timber.d("getMoviesBySortOrder(%s)", sortOrder == SortOrder.TOP_RATED ? "TopRated" : "Popularity");
 
         if (movieList != null && this.sortOrder == sortOrder) {
@@ -65,6 +70,37 @@ public class MovieRepository {
                 enqueue(tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.TOP_RATED));
                 break;
         }
+    }
+
+    public void getMovie(int movieId, Callback<Movie> callback) {
+        if (movieList == null) {
+            @SortOrder int sortOrder = preferenceManager.getSortByHighestRated() ? SortOrder.TOP_RATED : SortOrder.POPULARITY;
+            getMoviesBySortOrder(sortOrder, new CallbackWrapper(callback, movieId));
+
+            return;
+        }
+
+        Movie movie = getMovieById(movieId);
+
+        if (movie == null) {
+            callback.onError(R.string.movie_id_unknown, "");
+        } else {
+            callback.onResponse(movie);
+        }
+    }
+
+    private @Nullable Movie getMovieById(int id) {
+        if (movieList == null) {
+            return null;
+        }
+
+        for (Movie movie : movieList) {
+            if (movie.getId() == id) {
+                return movie;
+            }
+        }
+
+        return null;
     }
 
     private void cancelPendingCall() {
@@ -82,10 +118,10 @@ public class MovieRepository {
     }
 
     private class RetrofitCallback implements retrofit2.Callback<TMDBMovieResponse> {
-        private final Callback callback;
+        private final Callback<List<Movie>> callback;
         private @SortOrder int requestedSortOrder;
 
-        RetrofitCallback(Callback callback, @StringRes int sortOrder) {
+        RetrofitCallback(Callback<List<Movie>> callback, @StringRes int sortOrder) {
             this.callback = callback;
             this.requestedSortOrder = sortOrder;
         }
@@ -118,8 +154,28 @@ public class MovieRepository {
         }
     }
 
-    public interface Callback {
-        void onResponse(List<Movie> movieList);
+    public interface Callback<T> {
+        void onResponse(T response);
         void onError(@StringRes int error, @NonNull String errorArgument);
+    }
+
+    private class CallbackWrapper implements Callback<List<Movie>> {
+        private Callback<Movie> callback;
+        private int movieId;
+
+        CallbackWrapper(Callback<Movie> callback, int movieId) {
+            this.callback = callback;
+            this.movieId = movieId;
+        }
+
+        @Override
+        public void onResponse(List<Movie> response) {
+            getMovie(movieId, callback);
+        }
+
+        @Override
+        public void onError(@StringRes int error, @NonNull String errorArgument) {
+            callback.onError(error, errorArgument);
+        }
     }
 }

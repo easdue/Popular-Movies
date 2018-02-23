@@ -1,6 +1,5 @@
 package nl.erikduisters.popularmovies.ui.activity.main_activity;
 
-import android.arch.lifecycle.ViewModel;
 import android.support.v4.app.Fragment;
 
 import dagger.Binds;
@@ -8,10 +7,8 @@ import dagger.Module;
 import dagger.android.AndroidInjector;
 import dagger.android.support.FragmentKey;
 import dagger.multibindings.IntoMap;
-import nl.erikduisters.popularmovies.di.ViewModelKey;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragment;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragmentSubComponent;
-import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragmentViewModel;
 
 /**
  * Created by Erik Duisters on 08-12-2017.
@@ -23,9 +20,4 @@ abstract class MainActivityBindingModule {
     @IntoMap
     @FragmentKey(MovieListFragment.class)
     abstract AndroidInjector.Factory<? extends Fragment> bindMainActivityFragmentInjectorFactory(MovieListFragmentSubComponent.Builder builder);
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(MovieListFragmentViewModel.class)
-    abstract ViewModel bindMainFragmentViewModel(MovieListFragmentViewModel viewModel);
 }

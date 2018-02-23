@@ -21,6 +21,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.activity.movie_detail.DetailActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".ui.activity.main_activity.MainActivity"
+            android:label="@string/movie_detail">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activity.main_activity.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

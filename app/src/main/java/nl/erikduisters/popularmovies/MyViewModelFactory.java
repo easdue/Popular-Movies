@@ -8,14 +8,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-
-import nl.erikduisters.popularmovies.di.ActivityScope;
+import javax.inject.Singleton;
 
 /**
  * Created by Erik Duisters on 05-12-2017.
  */
 
-@ActivityScope
+@Singleton
 public class MyViewModelFactory implements ViewModelProvider.Factory {
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
 

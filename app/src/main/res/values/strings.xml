@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">PopularMovies</string>
+    <string name="app_name">Popular Movies</string>
+    <string name="movie_detail">Movie Detail</string>
     <string name="about">About</string>
     <string name="loading">Loading&#8230;</string>
     <string name="sort_order">Sort Order</string>
@@ -7,4 +8,11 @@
     <string name="most_popular">Most Popular</string>
     <string name="prefs_sort_by_highest_rated">Sort by Highest Rated</string>
     <string name="tmdb_api_call_failure">TMDB API Call Failure: %s</string>
+    <string name="release_date">Release Date:</string>
+    <string name="number_of_votes">Number of Votes:</string>
+    <string name="vote_average">Vote Average:</string>
+    <string name="popularity">Popularity:</string>
+    <string name="overview">Overview:</string>
+    <string name="movie_id_invalid">The requested movie ID is invalid</string>
+    <string name="movie_id_unknown">The requested movie is unknown</string>
 </resources>

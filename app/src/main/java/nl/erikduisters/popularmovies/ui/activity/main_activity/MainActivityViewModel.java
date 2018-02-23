@@ -8,21 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.di.ActivityScope;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
+import timber.log.Timber;
 
 /**
  * Created by Erik Duisters on 03-12-2017.
  */
-
-@ActivityScope
+@Singleton
 public final class MainActivityViewModel extends ViewModel {
     private MutableLiveData<MainActivityViewState> viewStateLiveData;
 
     @Inject
     MainActivityViewModel() {
+        Timber.d("New MainActivityViewModel created");
+
         List<MyMenuItem> optionsMenu = new ArrayList<>();
         optionsMenu.add(new MyMenuItem(R.id.menu_about, true, true));
 

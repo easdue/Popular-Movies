@@ -15,6 +15,8 @@ import dagger.Provides;
 import nl.erikduisters.popularmovies.MyApplication;
 import nl.erikduisters.popularmovies.data.remote.TMDBService;
 import nl.erikduisters.popularmovies.ui.activity.main_activity.MainActivitySubcomponent;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivity;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivitySubcomponent;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -22,7 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Erik Duisters on 04-12-2017.
  */
 
-@Module(subcomponents = MainActivitySubcomponent.class)
+@Module(subcomponents = {MainActivitySubcomponent.class, DetailActivitySubcomponent.class})
 abstract class AppModule {
     @Binds
     @Singleton
