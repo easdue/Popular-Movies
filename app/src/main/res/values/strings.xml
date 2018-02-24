@@ -15,4 +15,8 @@
     <string name="overview">Overview:</string>
     <string name="movie_id_invalid">The requested movie ID is invalid</string>
     <string name="movie_id_unknown">The requested movie is unknown</string>
+    <string name="tmdb_attribution">This product uses the TMDb API but is not endorsed or certified by TMDb.</string>
+    <string name="libraies_used">Libraries Used:</string>
+    <string name="libraries">Butterknife\nDagger2\nGlide\nGson\nRetrofit2\nTimber</string>
+    <string name="ok">OK</string>
 </resources>

@@ -7,6 +7,7 @@ secretsProperties.load(new FileInputStream(secretsPropertiesFile))
 android {
     compileSdkVersion 27
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "nl.erikduisters.popularmovies"
         minSdkVersion 15
         targetSdkVersion 27

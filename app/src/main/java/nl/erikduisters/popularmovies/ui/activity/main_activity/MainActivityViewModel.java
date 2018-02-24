@@ -3,6 +3,7 @@ package nl.erikduisters.popularmovies.ui.activity.main_activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.IdRes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +22,16 @@ import timber.log.Timber;
 @Singleton
 public final class MainActivityViewModel extends ViewModel {
     private MutableLiveData<MainActivityViewState> viewStateLiveData;
+    private List<MyMenuItem> optionsMenu;
 
     @Inject
     MainActivityViewModel() {
         Timber.d("New MainActivityViewModel created");
 
-        List<MyMenuItem> optionsMenu = new ArrayList<>();
+        optionsMenu = new ArrayList<>();
         optionsMenu.add(new MyMenuItem(R.id.menu_about, true, true));
 
-        MainActivityViewState viewState = new MainActivityViewState(optionsMenu);
+        MainActivityViewState viewState = new MainActivityViewState(optionsMenu, false);
 
         viewStateLiveData = new MutableLiveData<>();
         viewStateLiveData.setValue(viewState);
@@ -37,5 +39,15 @@ public final class MainActivityViewModel extends ViewModel {
 
     LiveData<MainActivityViewState> getViewState() {
         return viewStateLiveData;
+    }
+
+    void onMenuItemClicked(@IdRes int menuId) {
+        if (menuId == R.id.menu_about) {
+            viewStateLiveData.setValue(new MainActivityViewState(optionsMenu, true));
+        }
+    }
+
+    void onAboutDialogDismissed() {
+        viewStateLiveData.setValue(new MainActivityViewState(optionsMenu, false));
     }
 }

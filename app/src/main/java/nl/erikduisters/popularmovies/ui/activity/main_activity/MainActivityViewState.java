@@ -10,8 +10,10 @@ import nl.erikduisters.popularmovies.util.MyMenuItem;
 
 final class MainActivityViewState {
     final List<MyMenuItem> optionsMenu;
+    final boolean showAboutDialog;
 
-    MainActivityViewState(List<MyMenuItem> optionsMenu) {
+    MainActivityViewState(List<MyMenuItem> optionsMenu, boolean showAboutDialog) {
         this.optionsMenu = optionsMenu;
+        this.showAboutDialog = showAboutDialog;
     }
 }

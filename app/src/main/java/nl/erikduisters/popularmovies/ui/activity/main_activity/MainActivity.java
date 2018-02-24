@@ -14,14 +14,16 @@ import java.util.List;
 import butterknife.BindView;
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.ui.BaseActivity;
+import nl.erikduisters.popularmovies.ui.dialog.AboutDialog;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragment;
 import nl.erikduisters.popularmovies.util.MenuUtil;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
 import timber.log.Timber;
 
 //TODO: Make sure app does not crash when there is no internet connection
-public class MainActivity extends BaseActivity<MainActivityViewModel> {
+public class MainActivity extends BaseActivity<MainActivityViewModel> implements AboutDialog.DismissListener {
     private static final String TAG_MOVIE_LIST_FRAGMENT = "MovieListFragment";
+    private static final String TAG_ABOUT_DIALOG = "AboutDialog";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
 
@@ -77,8 +79,7 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_about:
-                //TODO: Show about dialog that gives credit to TMDB and any other library that requires that
-                Timber.d("About was clicked");
+                viewModel.onMenuItemClicked(item.getItemId());
                 return true;
         }
 
@@ -93,5 +94,25 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> {
         optionsMenu = viewState.optionsMenu;
 
         invalidateOptionsMenu();
+
+        if (viewState.showAboutDialog) {
+            showAboutDialog();
+        }
+    }
+
+    private void showAboutDialog() {
+        AboutDialog dialog = (AboutDialog) getSupportFragmentManager().findFragmentByTag(TAG_ABOUT_DIALOG);
+
+        if (dialog == null) {
+            dialog = AboutDialog.newInstance();
+        }
+
+        dialog.setListener(this);
+        dialog.show(getSupportFragmentManager(), TAG_ABOUT_DIALOG);
+    }
+
+    @Override
+    public void onDismiss() {
+        viewModel.onAboutDialogDismissed();
     }
 }
