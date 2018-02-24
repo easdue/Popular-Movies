@@ -11,7 +11,7 @@ import nl.erikduisters.popularmovies.MyApplication;
  * Created by Erik Duisters on 25-11-2017.
  */
 
-@Component(modules = {AndroidSupportInjectionModule.class, AppModule.class, ActivityBindingModule.class})
+@Component(modules = {AndroidSupportInjectionModule.class, AppModule.class, ActivityBindingModule.class, ViewModelBindingModule.class})
 @Singleton
 public interface AppComponent extends AndroidInjector<MyApplication> {
     @Component.Builder
