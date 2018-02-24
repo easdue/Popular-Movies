@@ -9,8 +9,8 @@ import dagger.android.AndroidInjector;
 import dagger.multibindings.IntoMap;
 import nl.erikduisters.popularmovies.ui.activity.main_activity.MainActivity;
 import nl.erikduisters.popularmovies.ui.activity.main_activity.MainActivitySubcomponent;
-import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivity;
-import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivitySubcomponent;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivity;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivitySubcomponent;
 
 /**
  * Created by Erik Duisters on 25-11-2017.
@@ -25,6 +25,6 @@ abstract class ActivityBindingModule {
 
     @Binds
     @IntoMap
-    @ActivityKey(DetailActivity.class)
-    abstract AndroidInjector.Factory<? extends Activity> bindDetailActivityInjectorFactory(DetailActivitySubcomponent.Builder builder);
+    @ActivityKey(MovieDetailActivity.class)
+    abstract AndroidInjector.Factory<? extends Activity> bindDetailActivityInjectorFactory(MovieDetailActivitySubcomponent.Builder builder);
 }

@@ -6,7 +6,7 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 import nl.erikduisters.popularmovies.ui.activity.main_activity.MainActivityViewModel;
-import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivityViewModel;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivityViewModel;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewModel;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragmentViewModel;
 
@@ -28,8 +28,8 @@ abstract class ViewModelBindingModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(DetailActivityViewModel.class)
-    abstract ViewModel bindDetailActivityViewModel(DetailActivityViewModel viewModel);
+    @ViewModelKey(MovieDetailActivityViewModel.class)
+    abstract ViewModel bindDetailActivityViewModel(MovieDetailActivityViewModel viewModel);
 
     @Binds
     @IntoMap

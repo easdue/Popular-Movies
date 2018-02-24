@@ -14,9 +14,9 @@ import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmen
  * Created by Erik Duisters on 21-02-2018.
  */
 @Module(subcomponents = {MovieDetailFragmentSubComponent.class})
-abstract class DetailActivityBindingModule {
+abstract class MovieDetailActivityBindingModule {
     @Binds
     @IntoMap
     @FragmentKey(MovieDetailFragment.class)
-    abstract AndroidInjector.Factory<? extends Fragment> bindDetailActivityFragmentInjectorFactory(MovieDetailFragmentSubComponent.Builder builder);
+    abstract AndroidInjector.Factory<? extends Fragment> bindMovieDetailActivityFragmentInjectorFactory(MovieDetailFragmentSubComponent.Builder builder);
 }

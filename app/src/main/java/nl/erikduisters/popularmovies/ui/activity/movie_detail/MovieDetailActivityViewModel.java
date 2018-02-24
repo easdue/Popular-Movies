@@ -14,22 +14,22 @@ import timber.log.Timber;
  */
 
 @Singleton
-public class DetailActivityViewModel extends ViewModel {
-    private MutableLiveData<DetailActivityViewState> viewStateLiveData;
+public class MovieDetailActivityViewModel extends ViewModel {
+    private MutableLiveData<MovieDetailActivityViewState> viewStateLiveData;
 
     @Inject
-    DetailActivityViewModel() {
+    MovieDetailActivityViewModel() {
         Timber.d("New DetailActivityViewModel created");
 
         viewStateLiveData = new MutableLiveData<>();
     }
 
-    LiveData<DetailActivityViewState> getViewState() {
+    LiveData<MovieDetailActivityViewState> getViewState() {
         return viewStateLiveData;
     }
 
     void onHomeAsUpPressed() {
-        viewStateLiveData.setValue(new DetailActivityViewState.FinishViewState());
+        viewStateLiveData.setValue(new MovieDetailActivityViewState.FinishViewState());
     }
 
     void onFinished() {

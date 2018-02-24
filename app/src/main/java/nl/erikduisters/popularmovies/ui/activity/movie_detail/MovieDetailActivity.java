@@ -13,13 +13,12 @@ import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.ui.BaseActivity;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragment;
-import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragment;
 
 /**
  * Created by Erik Duisters on 21-02-2018.
  */
 
-public class DetailActivity extends BaseActivity<DetailActivityViewModel> {
+public class MovieDetailActivity extends BaseActivity<MovieDetailActivityViewModel> {
     public static final String KEY_MOVIE_ID = "MovieID";
     private static final String TAG_MOVIE_DETAIL_FRAGMENT = "MovieDetailFragment";
 
@@ -55,16 +54,16 @@ public class DetailActivity extends BaseActivity<DetailActivityViewModel> {
     }
 
     @Override
-    protected Class<DetailActivityViewModel> getViewModelClass() {
-        return DetailActivityViewModel.class;
+    protected Class<MovieDetailActivityViewModel> getViewModelClass() {
+        return MovieDetailActivityViewModel.class;
     }
 
-    private void render(@Nullable DetailActivityViewState viewState) {
+    private void render(@Nullable MovieDetailActivityViewState viewState) {
         if (viewState == null) {
             return;
         }
 
-        if (viewState instanceof DetailActivityViewState.FinishViewState) {
+        if (viewState instanceof MovieDetailActivityViewState.FinishViewState) {
             NavUtils.navigateUpFromSameTask(this);
             viewModel.onFinished();
         }

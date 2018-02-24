@@ -10,7 +10,7 @@ import java.util.List;
 
 import nl.erikduisters.popularmovies.data.model.Movie;
 import nl.erikduisters.popularmovies.data.model.Status;
-import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivity;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivity;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
 
 /**
@@ -103,7 +103,7 @@ public interface MovieListFragmentViewState {
 
         Intent getIntent(Context ctx) {
             Intent intent = new Intent(ctx, activityClass);
-            intent.putExtra(DetailActivity.KEY_MOVIE_ID, movieId);
+            intent.putExtra(MovieDetailActivity.KEY_MOVIE_ID, movieId);
 
             return intent;
         }

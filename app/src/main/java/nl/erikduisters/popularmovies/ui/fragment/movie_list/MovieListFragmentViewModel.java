@@ -18,7 +18,7 @@ import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.data.local.PreferenceManager;
 import nl.erikduisters.popularmovies.data.model.Movie;
-import nl.erikduisters.popularmovies.ui.activity.movie_detail.DetailActivity;
+import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivity;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
 import timber.log.Timber;
 
@@ -123,7 +123,7 @@ public class MovieListFragmentViewModel extends AndroidViewModel {
     }
 
     void onMovieClicked(@NonNull Movie movie) {
-        startActivityViewState.setValue(new MovieListFragmentViewState.StartActivityViewState(movie.getId(), DetailActivity.class));
+        startActivityViewState.setValue(new MovieListFragmentViewState.StartActivityViewState(movie.getId(), MovieDetailActivity.class));
     }
 
     void onActivityStarted() {
