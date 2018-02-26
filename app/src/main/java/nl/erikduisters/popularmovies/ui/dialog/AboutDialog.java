@@ -14,6 +14,7 @@ import timber.log.Timber;
  * Created by Erik Duisters on 24-02-2018.
  */
 
+//TODO: Save and restore scrollview state (e.g. for restoring scroll position when the activity was killed)
 public class AboutDialog extends DialogFragment {
     public interface DismissListener {
         void onDismiss();

@@ -1,6 +1,7 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_list;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -32,6 +33,8 @@ import timber.log.Timber;
  */
 
 public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> implements MovieAdapter.OnItemClickListener {
+    private final static String KEY_LAYOUTMANAGER_STATE = "LayoutManagerState";
+
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.textView) TextView textView;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
@@ -46,6 +49,8 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         return new MovieListFragment();
     }
 
+    private Parcelable layoutManagerState;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +64,16 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
 
         movieAdapter = new MovieAdapter();
         movieAdapter.setOnItemClickListener(this);
+
+        layoutManagerState = null;
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAYOUTMANAGER_STATE)) {
+            MovieListFragmentViewState.MovieViewState state = viewModel.getMovieViewState().getValue();
+
+            if (state == null || state.status == Status.LOADING) {
+                layoutManagerState = savedInstanceState.getParcelable(KEY_LAYOUTMANAGER_STATE);
+            }
+        }
     }
 
     @Nullable
@@ -106,6 +121,11 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
 
             layoutManager.setSpanCount(viewModel.getSpanCount());
             movieAdapter.setMovieList(viewState.movieList);
+
+            if (layoutManagerState != null) {
+                layoutManager.onRestoreInstanceState(layoutManagerState);
+                layoutManagerState = null;
+            }
         }
 
         if (viewState.status == Status.LOADING) {
@@ -172,5 +192,12 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
     @Override
     public void onItemClick(Movie movie) {
         viewModel.onMovieClicked(movie);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(KEY_LAYOUTMANAGER_STATE, layoutManager.onSaveInstanceState());
     }
 }

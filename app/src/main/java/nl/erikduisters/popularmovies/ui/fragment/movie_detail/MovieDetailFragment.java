@@ -28,6 +28,7 @@ import nl.erikduisters.popularmovies.ui.BaseFragment;
  * Created by Erik Duisters on 21-02-2018.
  */
 
+//TODO: Save and restore ScrollView state (e.g. for restoring scroll position when the activity was killed)
 public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> {
     final static String KEY_MOVIE_ID = "MovieID";
 
