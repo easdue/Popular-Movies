@@ -33,7 +33,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void setMovieList(List<Movie> movielist) {
         this.movieList = movielist;
 
-        //TODO: Use listUtils to generate individual changed/removed calls
+        //TODO: Use ListUtils to generate individual changed/removed calls
         notifyDataSetChanged();
     }
 
@@ -95,10 +95,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
 
         public void bind(Movie movie) {
-            //TODO: Maybe use Configuration generate the uri path but where to initialize that????
-            //TODO: And that should be done in the movieRepository (eg. update the poster path)
             GlideApp.with(itemView.getContext())
-                    .load("https://image.tmdb.org/t/p/w500/" + movie.getPosterPath())
+                    .load(movie.getPosterPath())
                     .into(imageView);
         }
     }

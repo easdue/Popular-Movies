@@ -1,6 +1,5 @@
 package nl.erikduisters.popularmovies.ui.activity.main_activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,9 +17,7 @@ import nl.erikduisters.popularmovies.ui.dialog.AboutDialog;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragment;
 import nl.erikduisters.popularmovies.util.MenuUtil;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
-import timber.log.Timber;
 
-//TODO: Make sure app does not crash when there is no internet connection
 public class MainActivity extends BaseActivity<MainActivityViewModel> implements AboutDialog.DismissListener {
     private static final String TAG_MOVIE_LIST_FRAGMENT = "MovieListFragment";
     private static final String TAG_ABOUT_DIALOG = "AboutDialog";

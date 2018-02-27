@@ -89,7 +89,7 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
             Movie movie = viewState.movie;
 
             GlideApp.with(getContext())
-                    .load("https://image.tmdb.org/t/p/w500/" + viewState.movie.getPosterPath())
+                    .load(viewState.movie.getPosterPath())
                     .into(poster);
 
             title.setText(movie.getTitle());

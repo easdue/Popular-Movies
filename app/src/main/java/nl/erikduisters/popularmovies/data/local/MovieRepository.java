@@ -7,6 +7,8 @@ import android.support.annotation.StringRes;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -14,10 +16,12 @@ import javax.inject.Singleton;
 
 import nl.erikduisters.popularmovies.BuildConfig;
 import nl.erikduisters.popularmovies.R;
+import nl.erikduisters.popularmovies.data.model.Configuration;
 import nl.erikduisters.popularmovies.data.model.Movie;
 import nl.erikduisters.popularmovies.data.model.TMDBMovieResponse;
 import nl.erikduisters.popularmovies.data.remote.TMDBService;
 import retrofit2.Call;
+import retrofit2.Response;
 import timber.log.Timber;
 
 /**
@@ -39,7 +43,7 @@ public class MovieRepository {
     private PreferenceManager preferenceManager;
     private List<Movie> movieList;
     private @SortOrder int sortOrder;
-    private Call<TMDBMovieResponse> call;
+    private @Nullable Call<?> call;
 
     @Inject
     MovieRepository(TMDBService tmdbService, PreferenceManager preferenceManager) {
@@ -64,12 +68,71 @@ public class MovieRepository {
 
         switch (sortOrder) {
             case SortOrder.POPULARITY:
-                enqueue(tmdbService.getPopularMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.POPULARITY));
+                getMovies(tmdbService.getPopularMovies(BuildConfig.TMDB_API_KEY), new TMDBMovieResponseCallback(callback, SortOrder.POPULARITY));
                 break;
             case SortOrder.TOP_RATED:
-                enqueue(tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY), new RetrofitCallback(callback, SortOrder.TOP_RATED));
+                getMovies(tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY), new TMDBMovieResponseCallback(callback, SortOrder.TOP_RATED));
                 break;
         }
+    }
+
+    private void getMovies(Call<TMDBMovieResponse> call, TMDBMovieResponseCallback callback) {
+        cancelPendingCall();
+
+        if (isConfigurationOutdated()) {
+            getConfiguration(call, callback);
+            return;
+        }
+
+        this.call = call;
+        call.enqueue(callback);
+    }
+
+    private void cancelPendingCall() {
+        if (call != null && !call.isExecuted()) {
+            Timber.d("Cancelling pending call");
+            call.cancel();
+        }
+    }
+
+    private boolean isConfigurationOutdated() {
+        Date lastReadData = preferenceManager.getTMDBConfigurationReadDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
+
+        return lastReadData.before(calendar.getTime());
+    }
+
+    private void getConfiguration(Call<TMDBMovieResponse> movieResponseCall, TMDBMovieResponseCallback movieResponseCallback) {
+        Call<Configuration> configurationCall = tmdbService.getConfiguration(BuildConfig.TMDB_API_KEY);
+        this.call = configurationCall;
+
+        configurationCall.enqueue(new retrofit2.Callback<Configuration>() {
+            @Override
+            public void onResponse(Call<Configuration> call, Response<Configuration> response) {
+                MovieRepository.this.call = null;
+
+                if (response.isSuccessful()) {
+                    Configuration configuration = response.body();
+
+                    if (configuration != null) {
+                        preferenceManager.setTMDBConfiguration(configuration);
+                        getMovies(movieResponseCall, movieResponseCallback);
+                    } else {
+                        movieResponseCallback.onFailure(movieResponseCall, new Throwable("Could not parse received response"));
+                    }
+                } else {
+                    movieResponseCallback.onFailure(movieResponseCall, new Throwable(response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Configuration> call, Throwable t) {
+                MovieRepository.this.call = null;
+
+                movieResponseCallback.onFailure(movieResponseCall, t);
+            }
+        });
     }
 
     public void getMovie(int movieId, Callback<Movie> callback) {
@@ -103,25 +166,11 @@ public class MovieRepository {
         return null;
     }
 
-    private void cancelPendingCall() {
-        if (call != null && !call.isCanceled()) {
-            Timber.d("Cancelling pending call");
-            call.cancel();
-        }
-    }
-
-    private void enqueue(Call<TMDBMovieResponse> call, RetrofitCallback callback) {
-        cancelPendingCall();
-
-        this.call = call;
-        call.enqueue(callback);
-    }
-
-    private class RetrofitCallback implements retrofit2.Callback<TMDBMovieResponse> {
+    private class TMDBMovieResponseCallback implements retrofit2.Callback<TMDBMovieResponse> {
         private final Callback<List<Movie>> callback;
         private @SortOrder int requestedSortOrder;
 
-        RetrofitCallback(Callback<List<Movie>> callback, @StringRes int sortOrder) {
+        TMDBMovieResponseCallback(Callback<List<Movie>> callback, @StringRes int sortOrder) {
             this.callback = callback;
             this.requestedSortOrder = sortOrder;
         }
@@ -130,18 +179,21 @@ public class MovieRepository {
         public void onResponse(@NonNull Call<TMDBMovieResponse> call, @NonNull retrofit2.Response<TMDBMovieResponse> response) {
             Timber.d("onResponse()");
 
+            MovieRepository.this.call = null;
+
             if (response.isSuccessful()) {
                 TMDBMovieResponse tmdbMovieResponse = response.body();
 
                 if (tmdbMovieResponse != null) {
                     movieList = tmdbMovieResponse.getResults();
+                    updatePosterPaths();
+
                     sortOrder = requestedSortOrder;
-                    callback.onResponse(tmdbMovieResponse.getResults());
+                    callback.onResponse(movieList);
                 } else {
                     callback.onError(R.string.tmdb_api_call_failure, "Could not parse received response");
                 }
             } else {
-                //TODO: Properly handle this e.g. does response.message() contain the correct message or do I need to use response.errorBody()?
                 callback.onError(R.string.tmdb_api_call_failure, response.message());
             }
         }
@@ -149,9 +201,54 @@ public class MovieRepository {
         @Override
         public void onFailure(@NonNull Call<TMDBMovieResponse> call, @NonNull Throwable t) {
             Timber.d("onFailure()");
-            //TODO: Properly handle this (eg. when is this exactly called?)
+
+            MovieRepository.this.call = null;
+
             callback.onError(R.string.tmdb_api_call_failure, t.getMessage());
         }
+    }
+
+    private void updatePosterPaths() {
+        Configuration configuration = preferenceManager.getTMDBConfiguration();
+        Configuration.Images images = configuration.getImages();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(images.getBaseUrl());
+        sb.append(getPosterSize(images.getPosterSizes()));
+
+        int length = sb.length();
+
+        for (Movie movie : movieList) {
+            sb.setLength(length);
+            sb.append(movie.getPosterPath());
+            movie.setPosterPath(sb.toString());
+        }
+    }
+
+    private String getPosterSize(List<String> posterSizes) {
+        final int preferredSize = 185;
+        int bestMatchIndex = -1;
+        int bestMatchDiff = Integer.MAX_VALUE;
+
+        for (int i = 0; i < posterSizes.size(); i++) {
+            String posterSize = posterSizes.get(i).toLowerCase();
+
+            if (posterSize.startsWith("w")) {
+                int size = Integer.parseInt(posterSize.substring(1));
+                int sizeDiff = Math.abs(preferredSize - size);
+
+                if (sizeDiff < bestMatchDiff) {
+                    bestMatchDiff = sizeDiff;
+                    bestMatchIndex = i;
+                }
+            }
+        }
+
+        if (bestMatchIndex == -1) {
+            bestMatchIndex = posterSizes.size() - 1;
+        }
+
+        return posterSizes.get(bestMatchIndex);
     }
 
     public interface Callback<T> {

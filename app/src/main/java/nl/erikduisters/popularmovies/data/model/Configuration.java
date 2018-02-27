@@ -22,5 +22,10 @@ public class Configuration {
         private List<String> stillSizes;
 
         public Images() {}
+
+        public String getBaseUrl() { return baseUrl; }
+        public List<String> getPosterSizes() { return posterSizes; }
     }
+
+    public Images getImages() { return images; }
 }
