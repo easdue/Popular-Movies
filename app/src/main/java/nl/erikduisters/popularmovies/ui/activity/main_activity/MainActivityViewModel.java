@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import nl.erikduisters.popularmovies.R;
-import nl.erikduisters.popularmovies.di.ActivityScope;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
 import timber.log.Timber;
 
@@ -21,8 +20,8 @@ import timber.log.Timber;
  */
 @Singleton
 public final class MainActivityViewModel extends ViewModel {
-    private MutableLiveData<MainActivityViewState> viewStateLiveData;
-    private List<MyMenuItem> optionsMenu;
+    private final MutableLiveData<MainActivityViewState> viewStateLiveData;
+    private final List<MyMenuItem> optionsMenu;
 
     @Inject
     MainActivityViewModel() {

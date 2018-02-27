@@ -39,8 +39,8 @@ public class MovieRepository {
         int TOP_RATED = 1;
     }
 
-    private TMDBService tmdbService;
-    private PreferenceManager preferenceManager;
+    private final TMDBService tmdbService;
+    private final PreferenceManager preferenceManager;
     private List<Movie> movieList;
     private @SortOrder int sortOrder;
     private @Nullable Call<?> call;
@@ -109,7 +109,7 @@ public class MovieRepository {
 
         configurationCall.enqueue(new retrofit2.Callback<Configuration>() {
             @Override
-            public void onResponse(Call<Configuration> call, Response<Configuration> response) {
+            public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response) {
                 MovieRepository.this.call = null;
 
                 if (response.isSuccessful()) {
@@ -127,7 +127,7 @@ public class MovieRepository {
             }
 
             @Override
-            public void onFailure(Call<Configuration> call, Throwable t) {
+            public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t) {
                 MovieRepository.this.call = null;
 
                 movieResponseCallback.onFailure(movieResponseCall, t);
@@ -168,7 +168,7 @@ public class MovieRepository {
 
     private class TMDBMovieResponseCallback implements retrofit2.Callback<TMDBMovieResponse> {
         private final Callback<List<Movie>> callback;
-        private @SortOrder int requestedSortOrder;
+        private final @SortOrder int requestedSortOrder;
 
         TMDBMovieResponseCallback(Callback<List<Movie>> callback, @StringRes int sortOrder) {
             this.callback = callback;
@@ -210,6 +210,11 @@ public class MovieRepository {
 
     private void updatePosterPaths() {
         Configuration configuration = preferenceManager.getTMDBConfiguration();
+
+        if (configuration == null) {
+            return;
+        }
+
         Configuration.Images images = configuration.getImages();
 
         StringBuilder sb = new StringBuilder();
@@ -257,8 +262,8 @@ public class MovieRepository {
     }
 
     private class CallbackWrapper implements Callback<List<Movie>> {
-        private Callback<Movie> callback;
-        private int movieId;
+        private final Callback<Movie> callback;
+        private final int movieId;
 
         CallbackWrapper(Callback<Movie> callback, int movieId) {
             this.callback = callback;

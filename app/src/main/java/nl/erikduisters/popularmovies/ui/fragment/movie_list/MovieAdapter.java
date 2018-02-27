@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -39,7 +38,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private List<Movie> movieList;
     private RecyclerView recyclerView;
     private OnItemClickListener onItemClickListener;
-    private MyRequestListener requestListener;
+    private final MyRequestListener requestListener;
 
     public MovieAdapter() {
         requestListener = new MyRequestListener();
@@ -105,7 +104,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @BindView(R.id.progressBar) ProgressBar progressBar;
         @BindView(R.id.imageView) ImageView imageView;
 
-        private MyRequestListener requestListener;
+        private final MyRequestListener requestListener;
 
         public MovieViewHolder(View itemView, MyRequestListener requestListener) {
             super(itemView);

@@ -42,6 +42,7 @@ public class MyViewModelFactory implements ViewModelProvider.Factory {
         }
 
         try {
+            //noinspection unchecked
             return (T) creator.get();
         } catch (Exception e) {
             throw new RuntimeException(e);

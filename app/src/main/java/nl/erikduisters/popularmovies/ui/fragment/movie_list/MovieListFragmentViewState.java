@@ -54,39 +54,31 @@ public interface MovieListFragmentViewState {
                 this.optionsMenu = from.optionsMenu;
             }
 
-            public Builder setErrorStatus(@StringRes int errorLabel, @NonNull String errorArgument) {
+            void setErrorStatus(@StringRes int errorLabel, @NonNull String errorArgument) {
                 this.status = Status.ERROR;
                 this.errorLabel = errorLabel;
                 this.errorArgument = errorArgument;
                 this.movieList.clear();
-
-                return this;
             }
 
-            public Builder setLoadingStatus() {
+            void setLoadingStatus() {
                 this.status = Status.LOADING;
                 this.errorLabel = 0;
                 this.errorArgument = "";
-
-                return this;
             }
 
-            public Builder setOptionsMenu(@NonNull List<MyMenuItem> optionsMenu) {
+            void setOptionsMenu(@NonNull List<MyMenuItem> optionsMenu) {
                 this.optionsMenu = optionsMenu;
-
-                return this;
             }
 
-            public Builder setSuccessStatus(List<Movie> movieList) {
+            void setSuccessStatus(List<Movie> movieList) {
                 this.status = Status.SUCCESS;
                 this.movieList = movieList;
                 this.errorLabel = 0;
                 this.errorArgument = "";
-
-                return this;
             }
 
-            public MovieViewState build() {
+            MovieViewState build() {
                 return new MovieViewState(this);
             }
         }

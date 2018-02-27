@@ -15,7 +15,7 @@ import timber.log.Timber;
 
 @Singleton
 public class MovieDetailActivityViewModel extends ViewModel {
-    private MutableLiveData<MovieDetailActivityViewState> viewStateLiveData;
+    private final MutableLiveData<MovieDetailActivityViewState> viewStateLiveData;
 
     @Inject
     MovieDetailActivityViewModel() {

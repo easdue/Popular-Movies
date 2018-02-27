@@ -1,12 +1,8 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_detail;
 
-import android.location.GnssClock;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -16,7 +12,6 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.data.model.Movie;
@@ -30,7 +25,7 @@ import nl.erikduisters.popularmovies.ui.BaseFragment;
 
 //TODO: Save and restore ScrollView state (e.g. for restoring scroll position when the activity was killed)
 public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> {
-    final static String KEY_MOVIE_ID = "MovieID";
+    private final static String KEY_MOVIE_ID = "MovieID";
 
     @BindView(R.id.progressGroup) LinearLayout progressGroup;
     @BindView(R.id.progressBar) ProgressBar progressBar;
@@ -87,6 +82,10 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
             contentGroup.setVisibility(View.VISIBLE);
 
             Movie movie = viewState.movie;
+
+            if (movie == null) {
+                return;
+            }
 
             GlideApp.with(getContext())
                     .load(viewState.movie.getPosterPath())

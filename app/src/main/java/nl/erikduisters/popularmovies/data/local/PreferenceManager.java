@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -28,8 +26,8 @@ public class PreferenceManager {
     private final static String KEY_TMDB_CONFIGURATION = "tmdb_configuration";
     private final static String KEY_TMDB_CONFIGURATION_READ_DATE = "tmdb_configuration_read_date";
 
-    private SharedPreferences sharedPreferences;
-    private Gson gson;
+    private final SharedPreferences sharedPreferences;
+    private final Gson gson;
 
     @Inject
     PreferenceManager(@ApplicationContext Context ctx, Gson gson) {

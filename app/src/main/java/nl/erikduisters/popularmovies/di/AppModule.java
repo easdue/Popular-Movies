@@ -38,11 +38,9 @@ abstract class AppModule {
     @Provides
     @Singleton
     static Gson provideGson() {
-        Gson gson = new GsonBuilder()
+        return new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
-
-        return gson;
     }
 
     @Provides

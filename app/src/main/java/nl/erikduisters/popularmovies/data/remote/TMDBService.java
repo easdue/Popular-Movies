@@ -10,6 +10,7 @@ import retrofit2.http.Query;
  * Created by Erik Duisters on 17-02-2018.
  */
 
+//TODO: Use a OkHttp interceptor to set the api_key query parameter
 public interface TMDBService {
     String BASE_URL = "https://api.themoviedb.org/3/";
 

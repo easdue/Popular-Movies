@@ -27,8 +27,7 @@ import nl.erikduisters.popularmovies.MyViewModelFactory;
  */
 
 public abstract class BaseFragment<VM extends ViewModel> extends Fragment {
-    @Nullable
-    Unbinder unbinder;
+    @Nullable private Unbinder unbinder;
 
     @Inject
     MyViewModelFactory viewModelFactory;

@@ -20,7 +20,7 @@ import timber.log.Timber;
 
 @Singleton
 public class MovieDetailFragmentViewModel extends ViewModel {
-    private MutableLiveData<MovieDetailFragmentViewState> viewState;
+    private final MutableLiveData<MovieDetailFragmentViewState> viewState;
     private final MovieRepository movieRepository;
 
     @Inject
