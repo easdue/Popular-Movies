@@ -1,4 +1,4 @@
-#Popular Movies
+# Popular Movies
 
 This repository hosts my Popular Movies app that is part of the Udacity Android Developer Nanodegee.
 
