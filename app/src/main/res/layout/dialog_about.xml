@@ -24,7 +24,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_tmdb_rectangle"/>
+            app:srcCompat="@drawable/ic_tmdb_rectangle"
+            android:contentDescription="@string/tmdb_logo"/>
 
         <TextView
             android:id="@+id/tmdbAttribution"

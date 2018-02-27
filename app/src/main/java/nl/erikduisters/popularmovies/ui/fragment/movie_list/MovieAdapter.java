@@ -119,6 +119,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             errorMessage.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
 
+            imageView.setContentDescription(movie.getTitle());
+
             GlideApp.with(itemView.getContext())
                     .load(movie.getPosterPath())
                     .listener(requestListener)

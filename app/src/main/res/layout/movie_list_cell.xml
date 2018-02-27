@@ -26,5 +26,6 @@
         android:layout_height="278dp"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:contentDescription="@string/movie_poster"/>
 </FrameLayout>

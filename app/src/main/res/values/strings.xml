@@ -20,4 +20,6 @@
     <string name="libraies_used">Libraries Used:</string>
     <string name="libraries">Butterknife\nDagger2\nGlide\nGson\nRetrofit2\nTimber</string>
     <string name="ok">OK</string>
+    <string name="tmdb_logo">TMDb Logo</string>
+    <string name="movie_poster">Movie Poster</string>
 </resources>
