@@ -2,9 +2,9 @@ package nl.erikduisters.popularmovies.ui.activity.movie_detail;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -12,17 +12,18 @@ import butterknife.BindView;
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.ui.BaseActivity;
-import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragment;
 
 /**
  * Created by Erik Duisters on 21-02-2018.
  */
 
-public class MovieDetailActivity extends BaseActivity<MovieDetailActivityViewModel> {
+public class MovieDetailActivity extends BaseActivity<MovieDetailActivityViewModel> implements ViewPager.OnPageChangeListener {
     public static final String KEY_MOVIE_ID = "MovieID";
     private static final String TAG_MOVIE_DETAIL_FRAGMENT = "MovieDetailFragment";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.tabLayout) TabLayout tablayout;
+    @BindView(R.id.viewPager) ViewPager viewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,17 +34,14 @@ public class MovieDetailActivity extends BaseActivity<MovieDetailActivityViewMod
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        int movieId = getIntent().getIntExtra(KEY_MOVIE_ID, MovieRepository.INVALID_MOVIE_ID);
 
-        Fragment fragment = fragmentManager.findFragmentByTag(TAG_MOVIE_DETAIL_FRAGMENT);
 
-        if (fragment == null) {
-            fragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragmentPlaceholder, MovieDetailFragment
-                            .newInstance(getIntent().getIntExtra(KEY_MOVIE_ID, MovieRepository.INVALID_MOVIE_ID)), TAG_MOVIE_DETAIL_FRAGMENT)
-                    .commit();
-        }
+        MovieDetailActivityPagerAdapter adapter =
+                new MovieDetailActivityPagerAdapter(getSupportFragmentManager(), movieId, getBaseContext());
+        viewPager.addOnPageChangeListener(this);
+        viewPager.setAdapter(adapter);
+        tablayout.setupWithViewPager(viewPager);
 
         viewModel.getViewState().observe(this, this::render);
     }
@@ -78,5 +76,20 @@ public class MovieDetailActivity extends BaseActivity<MovieDetailActivityViewMod
         }
 
         return false;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

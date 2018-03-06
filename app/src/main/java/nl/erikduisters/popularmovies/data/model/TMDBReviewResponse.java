@@ -14,4 +14,6 @@ public class TMDBReviewResponse {
     private List<Review> results;
     private int total_pages;
     private int total_results;
+
+    public List<Review> getResults() { return results; }
 }

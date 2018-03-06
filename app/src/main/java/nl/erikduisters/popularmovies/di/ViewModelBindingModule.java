@@ -9,6 +9,7 @@ import nl.erikduisters.popularmovies.ui.activity.main_activity.MainActivityViewM
 import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivityViewModel;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewModel;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragmentViewModel;
+import nl.erikduisters.popularmovies.ui.fragment.movie_reviews.MovieReviewsFragmentViewModel;
 
 /**
  * Created by Erik Duisters on 24-02-2018.
@@ -35,4 +36,9 @@ abstract class ViewModelBindingModule {
     @IntoMap
     @ViewModelKey(MovieDetailFragmentViewModel.class)
     abstract ViewModel bindMovieDetailFragmentViewModel(MovieDetailFragmentViewModel viewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MovieReviewsFragmentViewModel.class)
+    abstract ViewModel bindMovieReviewsFragmentViewModel(MovieReviewsFragmentViewModel viewModel);
 }
