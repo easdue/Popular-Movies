@@ -19,7 +19,6 @@ import nl.erikduisters.popularmovies.data.model.Review;
  * Created by Erik Duisters on 06-03-2018.
  */
 
-//TODO: Make sure that on rotation change the data is re-used
 @Singleton
 public class MovieReviewsFragmentViewModel extends ViewModel {
     private final MutableLiveData<MovieReviewsFragmentViewState> reviewsViewState;
