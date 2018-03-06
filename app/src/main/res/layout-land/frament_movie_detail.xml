@@ -7,19 +7,19 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/progressGroup"
+        android:id="@+id/pageProgressGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical|center_horizontal">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/pageProgressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:id="@+id/progressMessage"
+            android:id="@+id/pageProgressMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -33,128 +33,189 @@
         android:layout_height="match_parent"
         android:scrollbars="horizontal|vertical">
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/poster"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Mad Max Fury Road"/>
+
+                <ImageView
+                    android:id="@+id/poster"
+                    android:layout_width="185dp"
+                    android:layout_height="278dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/movie_poster"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginLeft="8dp"/>
+
+                <TextView
+                    android:id="@+id/releaseDateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/release_date"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/poster"
+                    app:layout_constraintTop_toBottomOf="@+id/title"
+                    android:layout_marginLeft="8dp"/>
+
+                <TextView
+                    android:id="@+id/releaseDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/numberOfVotes"
+                    app:layout_constraintTop_toTopOf="@+id/releaseDateLabel"
+                    tools:text="14-02-2008"/>
+
+                <TextView
+                    android:id="@+id/voteAverageLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vote_average"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/releaseDateLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"/>
+
+                <TextView
+                    android:id="@+id/voteAverage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/numberOfVotes"
+                    app:layout_constraintTop_toTopOf="@id/voteAverageLabel"
+                    tools:text="6.4/10"/>
+
+
+                <TextView
+                    android:id="@+id/numberOfVotesLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/number_of_votes"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/releaseDateLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/voteAverageLabel"/>
+
+                <TextView
+                    android:id="@+id/numberOfVotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintStart_toEndOf="@id/numberOfVotesLabel"
+                    app:layout_constraintTop_toTopOf="@id/numberOfVotesLabel"
+                    tools:text="5727"/>
+
+                <TextView
+                    android:id="@+id/popularityLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/popularity"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/releaseDateLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/numberOfVotesLabel"/>
+
+                <TextView
+                    android:id="@+id/popularity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/numberOfVotes"
+                    app:layout_constraintTop_toTopOf="@id/popularityLabel"
+                    tools:text="599.23"/>
+
+                <TextView
+                    android:id="@+id/overviewLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/overview"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/releaseDateLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/popularityLabel"/>
+
+                <TextView
+                    android:id="@+id/overview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/overviewLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/overviewLabel"
+                    tools:text="Minions Stuart, Kevin and Bob are recruited by Sc arlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the  world."
+                    android:layout_marginRight="8dp"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/poster"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Mad Max Fury Road"/>
+                android:layout_margin="8dp">
 
-            <ImageView
-                android:id="@+id/poster"
-                android:layout_width="185dp"
-                android:layout_height="278dp"
-                android:adjustViewBounds="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="@string/movie_poster"/>
+                <TextView
+                    android:id="@+id/trailersLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trailers"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent"/>
 
-            <TextView
-                android:id="@+id/releaseDateLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/release_date"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/poster"
-                app:layout_constraintTop_toBottomOf="@id/title"/>
+                <LinearLayout
+                    android:id="@+id/trailersProgressGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/trailersLabel">
 
-            <TextView
-                android:id="@+id/releaseDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@+id/numberOfVotes"
-                app:layout_constraintTop_toTopOf="@+id/releaseDateLabel"
-                tools:text="14-02-2008"/>
+                    <ProgressBar
+                        android:id="@+id/trailersProgressBar"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/voteAverageLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vote_average"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/releaseDateLabel"
-                app:layout_constraintTop_toBottomOf="@id/releaseDateLabel"/>
+                    <TextView
+                        android:id="@+id/trailersProgressMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        tools:text="Loading..."/>
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/voteAverage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="6.4/10"
-                app:layout_constraintStart_toStartOf="@id/numberOfVotes"
-                app:layout_constraintTop_toTopOf="@id/voteAverageLabel"/>
-
-
-            <TextView
-                android:id="@+id/numberOfVotesLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/number_of_votes"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/releaseDateLabel"
-                app:layout_constraintTop_toBottomOf="@id/voteAverageLabel"/>
-
-            <TextView
-                android:id="@+id/numberOfVotes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                app:layout_constraintStart_toEndOf="@id/numberOfVotesLabel"
-                app:layout_constraintTop_toTopOf="@id/numberOfVotesLabel"
-                tools:text="5727"/>
-
-            <TextView
-                android:id="@+id/popularityLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popularity"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/releaseDateLabel"
-                app:layout_constraintTop_toBottomOf="@id/numberOfVotesLabel"/>
-
-            <TextView
-                android:id="@+id/popularity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="599.23"
-                app:layout_constraintStart_toStartOf="@id/numberOfVotes"
-                app:layout_constraintTop_toTopOf="@id/popularityLabel"/>
-
-            <TextView
-                android:id="@+id/overviewLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/overview"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/releaseDateLabel"
-                app:layout_constraintTop_toBottomOf="@+id/popularityLabel"/>
-
-            <TextView
-                android:id="@+id/overview"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/overviewLabel"
-                app:layout_constraintTop_toBottomOf="@+id/overviewLabel"
-                tools:text="Minions Stuart, Kevin and Bob are recruited by Sc arlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the  world."/>
-
-        </android.support.constraint.ConstraintLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/trailers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scrollIndicators="bottom"
+                    android:scrollbars="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/trailersLabel"/>
+            </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 </FrameLayout>

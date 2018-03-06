@@ -257,7 +257,7 @@ public class MovieRepository {
     }
 
     public interface Callback<T> {
-        void onResponse(T response);
+        void onResponse(@NonNull T response);
         void onError(@StringRes int error, @NonNull String errorArgument);
     }
 
@@ -271,7 +271,7 @@ public class MovieRepository {
         }
 
         @Override
-        public void onResponse(List<Movie> response) {
+        public void onResponse(@NonNull List<Movie> response) {
             getMovie(movieId, callback);
         }
 

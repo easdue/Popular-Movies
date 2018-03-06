@@ -1,13 +1,20 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_detail;
 
+import android.content.ActivityNotFoundException;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -16,20 +23,24 @@ import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.data.model.Movie;
 import nl.erikduisters.popularmovies.data.model.Status;
+import nl.erikduisters.popularmovies.data.model.Video;
 import nl.erikduisters.popularmovies.glide.GlideApp;
 import nl.erikduisters.popularmovies.ui.BaseFragment;
+import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.MovieViewState;
+import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.TrailerViewState;
 
 /**
  * Created by Erik Duisters on 21-02-2018.
  */
 
 //TODO: Save and restore ScrollView state (e.g. for restoring scroll position when the activity was killed)
-public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> {
+//TODO: Save and restore Trailer and review state
+public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> implements TrailerAdapter.OnItemClickListener {
     private final static String KEY_MOVIE_ID = "MovieID";
 
-    @BindView(R.id.progressGroup) LinearLayout progressGroup;
-    @BindView(R.id.progressBar) ProgressBar progressBar;
-    @BindView(R.id.progressMessage) TextView progressMessage;
+    @BindView(R.id.pageProgressGroup) LinearLayout pageProgressGroup;
+    @BindView(R.id.pageProgressBar) ProgressBar pageProgressBar;
+    @BindView(R.id.pageProgressMessage) TextView pageProgressMessage;
     @BindView(R.id.contentGroup) ScrollView contentGroup;
     @BindView(R.id.poster) ImageView poster;
     @BindView(R.id.title) TextView title;
@@ -38,6 +49,13 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     @BindView(R.id.numberOfVotes) TextView numberOfVotes;
     @BindView(R.id.popularity) TextView popularity;
     @BindView(R.id.overview) TextView overview;
+    @BindView(R.id.trailers) RecyclerView trailersRecyclerView;
+    @BindView(R.id.trailersProgressGroup) LinearLayout trailersProgressGroup;
+    @BindView(R.id.trailersProgressBar) ProgressBar trailersProgressBar;
+    @BindView(R.id.trailersProgressMessage) TextView trailersProgressMessage;
+
+    private final TrailerAdapter trailerAdapter;
+    private final LinearLayoutManager layoutManager;
 
     public static MovieDetailFragment newInstance(int movieId) {
         MovieDetailFragment fragment = new MovieDetailFragment();
@@ -50,16 +68,37 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         return fragment;
     }
 
+    public MovieDetailFragment() {
+        trailerAdapter = new TrailerAdapter();
+        trailerAdapter.setOnItemClickListener(this);
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel.getViewState().observe(this, this::render);
+        viewModel.getMovieViewState().observe(this, this::render);
+        viewModel.getTrailerViewState().observe(this, this::render);
+        viewModel.getStartActivityViewState().observe( this, this::render);
+        viewModel.getToastViewState().observe(this, this::render);
 
         Bundle args = getArguments();
 
         viewModel.setMovieId(args == null ? MovieRepository.INVALID_MOVIE_ID :
                 getArguments().getInt(KEY_MOVIE_ID, MovieRepository.INVALID_MOVIE_ID));
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, container, savedInstanceState);
+
+        trailersRecyclerView.setHasFixedSize(true);
+        trailersRecyclerView.setLayoutManager(layoutManager);
+        trailersRecyclerView.setAdapter(trailerAdapter);
+
+        return v;
     }
 
     @Override
@@ -72,47 +111,102 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         return MovieDetailFragmentViewModel.class;
     }
 
-    private void render(@Nullable MovieDetailFragmentViewState viewState) {
+    private void render(@Nullable MovieViewState viewState) {
         if (viewState == null) {
             return;
         }
 
         if (viewState.status == Status.SUCCESS) {
-            progressGroup.setVisibility(View.INVISIBLE);
+            pageProgressGroup.setVisibility(View.INVISIBLE);
             contentGroup.setVisibility(View.VISIBLE);
 
             Movie movie = viewState.movie;
 
-            if (movie == null) {
-                return;
+            if (movie != null) {
+                renderMovie(movie);
             }
-
-            GlideApp.with(getContext())
-                    .load(viewState.movie.getPosterPath())
-                    .into(poster);
-
-            title.setText(movie.getTitle());
-            releaseDate.setText(movie.getReleaseDate());
-            voteAverage.setText(String.format(Locale.getDefault(),"%.1f", movie.getVoteAverage()));
-            numberOfVotes.setText(String.valueOf(movie.getVoteCount()));
-            popularity.setText(String.format(Locale.getDefault(), "%.2f", movie.getPopularity()));
-            overview.setText(movie.getOverview());
         }
 
         if (viewState.status == Status.LOADING) {
-            progressGroup.setVisibility(View.VISIBLE);
+            pageProgressGroup.setVisibility(View.VISIBLE);
             contentGroup.setVisibility(View.INVISIBLE);
 
-            progressBar.setVisibility(View.VISIBLE);
-            progressMessage.setText(getString(R.string.loading));
+            pageProgressBar.setVisibility(View.VISIBLE);
+            pageProgressMessage.setText(getString(R.string.loading));
         }
 
         if (viewState.status == Status.ERROR) {
-            progressGroup.setVisibility(View.VISIBLE);
+            pageProgressGroup.setVisibility(View.VISIBLE);
             contentGroup.setVisibility(View.INVISIBLE);
 
-            progressBar.setVisibility(View.VISIBLE);
-            progressMessage.setText(getString(viewState.errorLabel, viewState.errorArgument));
+            pageProgressBar.setVisibility(View.VISIBLE);
+            pageProgressMessage.setText(getString(viewState.errorLabel, viewState.errorArgument));
         }
+    }
+
+    private void renderMovie(@NonNull Movie movie) {
+        //TODO: listener and TextView to show loading failed
+        GlideApp.with(getContext())
+                .load(movie.getPosterPath())
+                .into(poster);
+
+        title.setText(movie.getTitle());
+        releaseDate.setText(movie.getReleaseDate());
+        voteAverage.setText(String.format(Locale.getDefault(),"%.1f", movie.getVoteAverage()));
+        numberOfVotes.setText(String.valueOf(movie.getVoteCount()));
+        popularity.setText(String.format(Locale.getDefault(), "%.2f", movie.getPopularity()));
+        overview.setText(movie.getOverview());
+    }
+
+    private void render(@Nullable TrailerViewState viewState) {
+        if (viewState == null) {
+            return;
+        }
+
+        if (viewState.status == Status.SUCCESS) {
+            trailerAdapter.setTrailerList(viewState.trailerList);
+            trailersProgressGroup.setVisibility(View.GONE);
+        }
+
+        if (viewState.status == Status.LOADING) {
+            trailersProgressGroup.setVisibility(View.VISIBLE);
+            trailersProgressBar.setVisibility(View.VISIBLE);
+            trailersProgressMessage.setText(R.string.loading);
+        }
+
+        if (viewState.status == Status.ERROR) {
+            trailersProgressGroup.setVisibility(View.VISIBLE);
+            trailersProgressBar.setVisibility(View.GONE);
+            trailersProgressMessage.setText(getString(viewState.errorLabel, viewState.errorArgument));
+        }
+    }
+
+    private void render(@Nullable MovieDetailFragmentViewState.StartActivityViewState viewState) {
+        if (viewState == null) {
+            return;
+        }
+
+        try {
+            startActivity(viewState.getIntent());
+            viewModel.onActivityStarted();
+        } catch (ActivityNotFoundException e1) {
+            viewModel.onActivityStartFailed();
+        }
+    }
+
+    private void render(@Nullable MovieDetailFragmentViewState.ToastViewState viewState) {
+        if (viewState == null) {
+            return;
+        }
+
+        Toast.makeText(getContext(), getString(viewState.message), viewState.displayShortMessage ? Toast.LENGTH_SHORT : Toast.LENGTH_LONG)
+                .show();
+
+        viewModel.onToastDisplayed();
+    }
+
+    @Override
+    public void onItemClick(Video video) {
+        viewModel.onTrailerClicked(video);
     }
 }

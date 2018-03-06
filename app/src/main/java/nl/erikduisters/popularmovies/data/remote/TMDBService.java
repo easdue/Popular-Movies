@@ -2,8 +2,11 @@ package nl.erikduisters.popularmovies.data.remote;
 
 import nl.erikduisters.popularmovies.data.model.Configuration;
 import nl.erikduisters.popularmovies.data.model.TMDBMovieResponse;
+import nl.erikduisters.popularmovies.data.model.TMDBReviewResponse;
+import nl.erikduisters.popularmovies.data.model.TMDBVideoResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -22,4 +25,10 @@ public interface TMDBService {
 
     @GET("movie/top_rated")
     Call<TMDBMovieResponse> getTopRatedMovies(@Query("api_key") String api_key);
+
+    @GET("movie/{id}/videos")
+    Call<TMDBVideoResponse> getVideos(@Path("id") int movieId, @Query("api_key") String api_key);
+
+    @GET("movie/{id}/reviews")
+    Call<TMDBReviewResponse> getReviews(@Path("id") int movieId, @Query("api_key") String api_key);
 }

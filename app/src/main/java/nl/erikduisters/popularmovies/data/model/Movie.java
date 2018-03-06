@@ -20,7 +20,24 @@ public class Movie {
     private float popularity;
     private int voteCount;
     private boolean video;
-    private float vote_average;
+    private float voteAverage;
+
+    protected Movie(Movie other) {
+        this.posterPath = other.posterPath;
+        this.adult = other.adult;
+        this.overview = other.overview;
+        this.releaseDate = other.releaseDate;
+        this.genreIds = other.genreIds;
+        this.id = other.id;
+        this.originalTitle = other.originalTitle;
+        this.originalLanguage  = other.originalLanguage;
+        this.title = other.title;
+        this.backdropPath = other.backdropPath;
+        this.popularity = other.popularity;
+        this.voteCount = other.voteCount;
+        this.video = other.video;
+        this.voteAverage = other.voteAverage;
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -40,7 +57,7 @@ public class Movie {
     }
 
     public float getVoteAverage() {
-        return vote_average;
+        return voteAverage;
     }
 
     public int getVoteCount() {

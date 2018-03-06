@@ -132,7 +132,7 @@ public class MovieListFragmentViewModel extends AndroidViewModel {
 
     private class Callback implements MovieRepository.Callback<List<Movie>> {
         @Override
-        public void onResponse(List<Movie> movieList) {
+        public void onResponse(@NonNull List<Movie> movieList) {
             builder.setSuccessStatus(movieList);
 
             movieViewState.setValue(builder.build());

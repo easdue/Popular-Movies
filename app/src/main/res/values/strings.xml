@@ -14,6 +14,7 @@
     <string name="vote_average">Vote Average:</string>
     <string name="popularity">Popularity:</string>
     <string name="overview">Overview:</string>
+    <string name="trailers">Trailers:</string>
     <string name="movie_id_invalid">The requested movie ID is invalid</string>
     <string name="movie_id_unknown">The requested movie is unknown</string>
     <string name="tmdb_attribution">This product uses the TMDb API but is not endorsed or certified by TMDb.</string>
@@ -22,4 +23,5 @@
     <string name="ok">OK</string>
     <string name="tmdb_logo">TMDb Logo</string>
     <string name="movie_poster">Movie Poster</string>
+    <string name="cannot_start_activity_to_view_trailer">Cannot start activity to view trailer</string>
 </resources>

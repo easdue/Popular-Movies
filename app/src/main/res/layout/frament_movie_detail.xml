@@ -8,19 +8,19 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/progressGroup"
+        android:id="@+id/pageProgressGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical|center_horizontal">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/pageProgressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:id="@+id/progressMessage"
+            android:id="@+id/pageProgressMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -32,6 +32,7 @@
         android:id="@+id/contentGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="8dp"
         android:scrollbars="horizontal|vertical">
 
         <android.support.constraint.ConstraintLayout
@@ -56,13 +57,13 @@
                 android:id="@+id/poster"
                 android:layout_width="185dp"
                 android:layout_height="278dp"
-                android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:adjustViewBounds="true"
+                android:contentDescription="@string/movie_poster"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title"
-                android:contentDescription="@string/movie_poster"/>
+                app:layout_constraintTop_toBottomOf="@+id/title"/>
 
             <LinearLayout
                 android:id="@+id/releaseDateLayout"
@@ -190,8 +191,54 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/overviewLabel"
                 app:layout_constraintTop_toBottomOf="@+id/overviewLabel"
-                tools:text="Minions Stuart, Kevin and Bob are recruited by Sc arlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the  world."/>
+                tools:text="Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the  world."/>
 
+            <TextView
+                android:id="@+id/trailersLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/trailers"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/overviewLabel"
+                app:layout_constraintTop_toBottomOf="@+id/overview"/>
+
+            <LinearLayout
+                android:id="@+id/trailersProgressGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                app:layout_constraintEnd_toEndOf="@id/overview"
+                app:layout_constraintStart_toStartOf="@id/overview"
+                app:layout_constraintTop_toBottomOf="@+id/trailersLabel">
+
+                <ProgressBar
+                    android:id="@+id/trailersProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/trailersProgressMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    tools:text="Loading..."/>
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trailers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:scrollIndicators="bottom"
+                android:scrollbars="horizontal"
+                app:layout_constraintEnd_toEndOf="@id/overview"
+                app:layout_constraintStart_toStartOf="@id/overviewLabel"
+                app:layout_constraintTop_toBottomOf="@id/trailersLabel"/>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </FrameLayout>
