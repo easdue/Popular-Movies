@@ -48,7 +48,8 @@ public class MovieReviewsFragmentViewModel extends ViewModel {
             reviewsRepository.getReviews(movieId, new ReviewsRepository.Callback() {
                 @Override
                 public void onResponse(@NonNull List<Review> reviews) {
-                    reviewsViewState.setValue(MovieReviewsFragmentViewState.getSuccessState(movieId, reviews));
+                    reviewsViewState.setValue(MovieReviewsFragmentViewState.getSuccessState(movieId, reviews,
+                            reviews.isEmpty() ? R.string.no_reviews_available : 0));
                 }
 
                 @Override

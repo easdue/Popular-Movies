@@ -100,8 +100,13 @@ public class MovieReviewsFragment extends BaseFragment<MovieReviewsFragmentViewM
         }
 
         if (viewState.status == Status.SUCCESS) {
-            progressBar.setVisibility(GONE);
-            progressMessage.setVisibility(GONE);
+            if (viewState.emptyRevieListMessage != 0) {
+                progressBar.setVisibility(GONE);
+                progressMessage.setText(viewState.emptyRevieListMessage);
+            } else {
+                progressBar.setVisibility(GONE);
+                progressMessage.setVisibility(GONE);
+            }
 
             reviewAdapter.setReviewList(viewState.reviewList);
         }
