@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,10 +37,10 @@ import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmen
  * Created by Erik Duisters on 21-02-2018.
  */
 
-//TODO: Save and restore ScrollView state (e.g. for restoring scroll position when the activity was killed)
-//TODO: Save and restore Trailer and review state
 public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> implements TrailerAdapter.OnItemClickListener {
     private final static String KEY_MOVIE_ID = "MovieID";
+    private final static String KEY_SCROLL_Y = "ScrollY";
+    private final static String KEY_TRAILER_STATE = "TrailerState";
 
     @BindView(R.id.pageProgressGroup) LinearLayout pageProgressGroup;
     @BindView(R.id.pageProgressBar) ProgressBar pageProgressBar;
@@ -62,6 +63,8 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     private final LinearLayoutManager layoutManager;
     private Movie currentMovie;
     private Context context;
+    private int scrollViewY;
+    private Parcelable trailerLayoutManagerState;
 
     public static MovieDetailFragment newInstance(int movieId) {
         MovieDetailFragment fragment = new MovieDetailFragment();
@@ -78,6 +81,7 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         trailerAdapter = new TrailerAdapter();
         trailerAdapter.setOnItemClickListener(this);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        scrollViewY = -1;
     }
 
     @Override
@@ -100,6 +104,15 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
 
         viewModel.setMovieId(args == null ? MovieRepository.INVALID_MOVIE_ID :
                 getArguments().getInt(KEY_MOVIE_ID, MovieRepository.INVALID_MOVIE_ID));
+
+        if (savedInstanceState != null) {
+            MovieViewState state = viewModel.getMovieViewState().getValue();
+
+            if (state == null || state.status == Status.LOADING) {
+                scrollViewY = savedInstanceState.getInt(KEY_SCROLL_Y);
+                trailerLayoutManagerState = savedInstanceState.getParcelable(KEY_TRAILER_STATE);
+            }
+        }
     }
 
     @Nullable
@@ -114,6 +127,14 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         favorite.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(KEY_SCROLL_Y, contentGroup.getScrollY());
+        outState.putParcelable(KEY_TRAILER_STATE, layoutManager.onSaveInstanceState());
     }
 
     @Override
@@ -155,7 +176,7 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
             pageProgressGroup.setVisibility(View.VISIBLE);
             contentGroup.setVisibility(View.INVISIBLE);
 
-            pageProgressBar.setVisibility(View.VISIBLE);
+            pageProgressBar.setVisibility(View.INVISIBLE);
             pageProgressMessage.setText(getString(viewState.errorLabel, viewState.errorArgument));
         }
     }
@@ -184,6 +205,21 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         if (viewState.status == Status.SUCCESS) {
             trailerAdapter.setTrailerList(viewState.trailerList);
             trailersProgressGroup.setVisibility(View.GONE);
+
+            if (scrollViewY != -1) {
+                contentGroup.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        contentGroup.scrollTo(0, scrollViewY);
+                        scrollViewY = -1;
+                    }
+                });
+            }
+
+            if (trailerLayoutManagerState != null) {
+                layoutManager.onRestoreInstanceState(trailerLayoutManagerState);
+                trailerLayoutManagerState = null;
+            }
         }
 
         if (viewState.status == Status.LOADING) {
