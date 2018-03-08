@@ -27,7 +27,6 @@ import timber.log.Timber;
  * Created by Erik Duisters on 19-02-2018.
  */
 
-//TODO: Show you don't have any favorites yet if there are none
 @Singleton
 public class MovieListFragmentViewModel extends AndroidViewModel {
     private final MovieRepository movieRepository;

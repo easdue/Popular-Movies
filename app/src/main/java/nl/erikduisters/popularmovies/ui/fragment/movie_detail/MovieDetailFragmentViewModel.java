@@ -26,7 +26,6 @@ import timber.log.Timber;
  * Created by Erik Duisters on 21-02-2018.
  */
 
-//TODO: Make sure that on rotation change the data is re-used
 @Singleton
 public class MovieDetailFragmentViewModel extends ViewModel {
     private final MutableLiveData<MovieViewState> movieViewState;

@@ -38,8 +38,6 @@ import timber.log.Timber;
  * Created by Erik Duisters on 18-02-2018.
  */
 
-//TODO: register a uri observer when sortorder == FAVORITE and unregister when it is not
-//TODO: When fetching movie for detail view query the content provider to find out if the movie is a favorite
 @Singleton
 public class MovieRepository extends ContentObserver {
     public static final int INVALID_MOVIE_ID = -1;
@@ -200,7 +198,7 @@ public class MovieRepository extends ContentObserver {
 
     @Override
     public void onChange(boolean selfChange) {
-        Timber.e("selfChange=%s, isUiThreaq=%s", selfChange ? "true" : "false", Looper.myLooper() == Looper.getMainLooper() ? "true" : "false");
+        Timber.e("selfChange=%s, isUiThread=%s", selfChange ? "true" : "false", Looper.myLooper() == Looper.getMainLooper() ? "true" : "false");
         executor.execute(new LoadFavoriteMovies(sortOrder, favoriteMovieListCallback));
     }
 
