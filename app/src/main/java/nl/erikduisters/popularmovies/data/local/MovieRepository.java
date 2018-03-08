@@ -3,8 +3,11 @@ package nl.erikduisters.popularmovies.data.local;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -38,7 +41,7 @@ import timber.log.Timber;
 //TODO: register a uri observer when sortorder == FAVORITE and unregister when it is not
 //TODO: When fetching movie for detail view query the content provider to find out if the movie is a favorite
 @Singleton
-public class MovieRepository {
+public class MovieRepository extends ContentObserver {
     public static final int INVALID_MOVIE_ID = -1;
 
     private final TMDBService tmdbService;
@@ -49,10 +52,13 @@ public class MovieRepository {
     private List<Movie> movieList;
     private @SortOrder int sortOrder;
     private @Nullable Call<?> call;
+    private @Nullable Callback<List<Movie>> favoriteMovieListCallback;
 
     @Inject
     MovieRepository(TMDBService tmdbService, PreferenceManager preferenceManager,
                     ContentResolver contentResolver, Executor executor, @Named("MainLooper") Handler handler) {
+        super(handler);
+
         this.tmdbService = tmdbService;
         this.preferenceManager = preferenceManager;
         this.contentResolver = contentResolver;
@@ -66,6 +72,14 @@ public class MovieRepository {
 
         if (movieList != null && this.sortOrder == sortOrder) {
             callback.onResponse(movieList);
+        }
+
+        if (sortOrder == SortOrder.FAVORITE) {
+            favoriteMovieListCallback = callback;
+            contentResolver.registerContentObserver(MovieEntry.CONTENT_URI, true, this);
+        } else {
+            favoriteMovieListCallback = null;
+            contentResolver.unregisterContentObserver(this);
         }
 
         switch (sortOrder) {
@@ -177,6 +191,22 @@ public class MovieRepository {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean deliverSelfNotifications() {
+        return true;
+    }
+
+    @Override
+    public void onChange(boolean selfChange) {
+        Timber.e("selfChange=%s, isUiThreaq=%s", selfChange ? "true" : "false", Looper.myLooper() == Looper.getMainLooper() ? "true" : "false");
+        executor.execute(new LoadFavoriteMovies(sortOrder, favoriteMovieListCallback));
+    }
+
+    @Override
+    public void onChange(boolean selfChange, Uri uri) {
+        onChange(selfChange);
     }
 
     private class TMDBMovieResponseCallback implements retrofit2.Callback<TMDBMovieResponse> {
