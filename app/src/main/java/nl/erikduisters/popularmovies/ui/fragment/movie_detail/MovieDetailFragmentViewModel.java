@@ -112,4 +112,15 @@ public class MovieDetailFragmentViewModel extends ViewModel {
     void onToastDisplayed() {
         toastViewState.setValue(null);
     }
+
+    void onFavoriteClicked(Movie movie) {
+        movie.setFavorite(!movie.isFavorite());
+        movieViewState.setValue(MovieViewState.getSuccessState(movie));
+
+        if (movie.isFavorite()) {
+            movieRepository.addToFavorites(movie);
+        } else {
+            movieRepository.removeFromFavorites(movie);
+        }
+    }
 }

@@ -19,7 +19,6 @@ import nl.erikduisters.popularmovies.ui.BaseActivity;
 
 public class MovieDetailActivity extends BaseActivity<MovieDetailActivityViewModel> implements ViewPager.OnPageChangeListener {
     public static final String KEY_MOVIE_ID = "MovieID";
-    private static final String TAG_MOVIE_DETAIL_FRAGMENT = "MovieDetailFragment";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.tabLayout) TabLayout tablayout;

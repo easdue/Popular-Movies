@@ -78,7 +78,7 @@ public class MovieReviewsFragment extends BaseFragment<MovieReviewsFragmentViewM
     }
 
     @Override
-    protected Class getViewModelClass() {
+    protected Class<MovieReviewsFragmentViewModel> getViewModelClass() {
         return MovieReviewsFragmentViewModel.class;
     }
 

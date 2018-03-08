@@ -48,7 +48,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:text="bla"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
     </LinearLayout>
 

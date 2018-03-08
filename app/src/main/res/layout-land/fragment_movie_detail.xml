@@ -163,6 +163,18 @@
                     tools:text="Minions Stuart, Kevin and Bob are recruited by Sc arlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the  world."
                     android:layout_marginRight="8dp"/>
 
+                <ImageView
+                    android:id="@+id/favorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/releaseDate"
+                    app:layout_constraintTop_toTopOf="@+id/releaseDate"
+                    app:srcCompat="@drawable/vector_drawable_ic_favorite_outline"/>
+
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout

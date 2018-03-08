@@ -27,4 +27,5 @@
     <string name="movie_poster">Movie Poster</string>
     <string name="cannot_start_activity_to_view_trailer">Cannot start activity to view trailer</string>
     <string name="author">Author:</string>
+    <string name="content_authority">nl.erikduisters.popularmovies</string>
 </resources>

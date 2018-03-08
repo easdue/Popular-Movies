@@ -61,7 +61,7 @@ public abstract class BaseFragment<VM extends ViewModel> extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(getLayoutResId(), container, false);
 
-        ButterKnife.bind(this, v);
+        unbinder = ButterKnife.bind(this, v);
 
         return v;
     }

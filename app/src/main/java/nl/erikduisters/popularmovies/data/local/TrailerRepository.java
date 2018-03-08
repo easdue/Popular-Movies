@@ -48,12 +48,12 @@ public class TrailerRepository {
     }
 
     private class TMDBVideoResponseCallback implements retrofit2.Callback<TMDBVideoResponse> {
-        private Callback callback;
+        private final Callback callback;
 
         TMDBVideoResponseCallback(Callback callback) { this.callback = callback; }
 
         @Override
-        public void onResponse(Call<TMDBVideoResponse> call, Response<TMDBVideoResponse> response) {
+        public void onResponse(@NonNull Call<TMDBVideoResponse> call, @NonNull Response<TMDBVideoResponse> response) {
             Timber.d("onResponse()");
 
             TrailerRepository.this.call = null;
@@ -72,7 +72,7 @@ public class TrailerRepository {
         }
 
         @Override
-        public void onFailure(Call<TMDBVideoResponse> call, Throwable t) {
+        public void onFailure(@NonNull Call<TMDBVideoResponse> call, @NonNull Throwable t) {
             Timber.d("onFailure()");
 
             TrailerRepository.this.call = null;

@@ -17,7 +17,7 @@ import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragmentVie
  * Created by Erik Duisters on 21-02-2018.
  */
 
-public interface MovieDetailFragmentViewState {
+interface MovieDetailFragmentViewState {
     final class MovieViewState implements MovieDetailFragmentViewState {
         final @Status int status;
         final @Nullable Movie movie;

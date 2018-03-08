@@ -20,7 +20,7 @@ import nl.erikduisters.popularmovies.data.model.Review;
  */
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
-    List<Review> reviewList;
+    private List<Review> reviewList;
 
     void setReviewList(@NonNull List<Review> reviewList) {
         this.reviewList = reviewList;

@@ -33,6 +33,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.main_activity.MainActivity"/>
         </activity>
+
+        <provider
+            android:name=".data.local.database.MovieProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"/>
     </application>
 
 </manifest>

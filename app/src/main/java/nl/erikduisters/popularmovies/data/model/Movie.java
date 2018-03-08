@@ -21,7 +21,9 @@ public class Movie {
     private int voteCount;
     private boolean video;
     private float voteAverage;
+    private transient boolean isFavorite;
 
+    /*TODO: remove me
     protected Movie(Movie other) {
         this.posterPath = other.posterPath;
         this.adult = other.adult;
@@ -37,7 +39,9 @@ public class Movie {
         this.voteCount = other.voteCount;
         this.video = other.video;
         this.voteAverage = other.voteAverage;
+        this.isFavorite = other.isFavorite;
     }
+    */
 
     public String getPosterPath() {
         return posterPath;
@@ -71,4 +75,7 @@ public class Movie {
     public String getOverview() {
         return overview;
     }
+
+    public boolean isFavorite() { return isFavorite; }
+    public void setFavorite(boolean isFavorite) { this.isFavorite = isFavorite; }
 }

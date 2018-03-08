@@ -14,7 +14,7 @@ import nl.erikduisters.popularmovies.ui.fragment.movie_reviews.MovieReviewsFragm
  * Created by Erik Duisters on 06-03-2018.
  */
 
-public class MovieDetailActivityPagerAdapter extends FragmentPagerAdapter {
+class MovieDetailActivityPagerAdapter extends FragmentPagerAdapter {
     private final int movieId;
     private final Context ctx;
 

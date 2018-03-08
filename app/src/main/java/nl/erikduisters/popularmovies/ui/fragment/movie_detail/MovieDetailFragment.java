@@ -1,6 +1,8 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_detail;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.data.model.Movie;
@@ -43,6 +46,7 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     @BindView(R.id.pageProgressMessage) TextView pageProgressMessage;
     @BindView(R.id.contentGroup) ScrollView contentGroup;
     @BindView(R.id.poster) ImageView poster;
+    @BindView(R.id.favorite) ImageView favorite;
     @BindView(R.id.title) TextView title;
     @BindView(R.id.releaseDate) TextView releaseDate;
     @BindView(R.id.voteAverage) TextView voteAverage;
@@ -56,6 +60,8 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
 
     private final TrailerAdapter trailerAdapter;
     private final LinearLayoutManager layoutManager;
+    private Movie currentMovie;
+    private Context context;
 
     public static MovieDetailFragment newInstance(int movieId) {
         MovieDetailFragment fragment = new MovieDetailFragment();
@@ -72,6 +78,13 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         trailerAdapter = new TrailerAdapter();
         trailerAdapter.setOnItemClickListener(this);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        this.context = context;
     }
 
     @Override
@@ -98,12 +111,14 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         trailersRecyclerView.setLayoutManager(layoutManager);
         trailersRecyclerView.setAdapter(trailerAdapter);
 
+        favorite.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
         return v;
     }
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.frament_movie_detail;
+        return R.layout.fragment_movie_detail;
     }
 
     @Override
@@ -123,6 +138,7 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
             Movie movie = viewState.movie;
 
             if (movie != null) {
+                currentMovie = movie;
                 renderMovie(movie);
             }
         }
@@ -146,10 +162,12 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
 
     private void renderMovie(@NonNull Movie movie) {
         //TODO: listener and TextView to show loading failed
-        GlideApp.with(getContext())
+        GlideApp.with(context)
                 .load(movie.getPosterPath())
                 .into(poster);
 
+        favorite.setImageResource(movie.isFavorite() ? R.drawable.vector_drawable_ic_favorite :
+                R.drawable.vector_drawable_ic_favorite_outline);
         title.setText(movie.getTitle());
         releaseDate.setText(movie.getReleaseDate());
         voteAverage.setText(String.format(Locale.getDefault(),"%.1f", movie.getVoteAverage()));
@@ -208,5 +226,10 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     @Override
     public void onItemClick(Video video) {
         viewModel.onTrailerClicked(video);
+    }
+
+    @OnClick(R.id.favorite)
+    public void onFavoriteClicked() {
+        viewModel.onFavoriteClicked(currentMovie);
     }
 }

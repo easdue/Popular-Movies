@@ -37,7 +37,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         void onItemClick(Video video);
     }
 
-    private GlideRequestListener glideRequestListener;
+    private final GlideRequestListener glideRequestListener;
     private List<Video> trailerList;
     private RecyclerView recyclerView;
     private OnItemClickListener onItemClickListener;
@@ -58,9 +58,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     public TrailerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer, parent, false);
 
-        TrailerViewHolder vh = new TrailerViewHolder(v, this);
-
-        return vh;
+        return new TrailerViewHolder(v, this);
     }
 
     @Override
@@ -110,7 +108,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         @BindView(R.id.errorMessage) TextView errorMessage;
         @BindView(R.id.play) ImageView playButton;
 
-        @NonNull private ViewHolderClickListener<TrailerViewHolder> listener;
+        @NonNull private final ViewHolderClickListener<TrailerViewHolder> listener;
 
         TrailerViewHolder(View itemView, @NonNull ViewHolderClickListener<TrailerViewHolder> listener) {
             super(itemView);

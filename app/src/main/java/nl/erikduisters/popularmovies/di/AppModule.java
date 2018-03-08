@@ -1,12 +1,19 @@
 package nl.erikduisters.popularmovies.di;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Binds;
@@ -52,5 +59,24 @@ abstract class AppModule {
                 .build();
 
         return retrofit.create(TMDBService.class);
+    }
+
+    @Provides
+    @Singleton
+    static ContentResolver provideContentResolver(@ApplicationContext Context context) {
+        return context.getContentResolver();
+    }
+
+    @Provides
+    @Singleton
+    static Executor provideExecutor() {
+        return Executors.newFixedThreadPool(2);
+    }
+
+    @Provides
+    @Singleton
+    @Named("MainLooper")
+    static Handler provideHandler() {
+        return new Handler(Looper.getMainLooper());
     }
 }

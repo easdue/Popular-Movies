@@ -1,5 +1,10 @@
 package nl.erikduisters.popularmovies.data.local;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,12 +15,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import nl.erikduisters.popularmovies.BuildConfig;
 import nl.erikduisters.popularmovies.R;
+import nl.erikduisters.popularmovies.data.local.database.MovieContract.MovieEntry;
 import nl.erikduisters.popularmovies.data.model.Configuration;
 import nl.erikduisters.popularmovies.data.model.Movie;
 import nl.erikduisters.popularmovies.data.model.TMDBMovieResponse;
@@ -28,6 +36,8 @@ import timber.log.Timber;
  * Created by Erik Duisters on 18-02-2018.
  */
 
+//TODO: register a uri observer when sortorder == FAVORITE and unregister when it is not
+//TODO: When fetching movie for detail view query the content provider to find out if the movie is a favorite
 @Singleton
 public class MovieRepository {
     public static final int INVALID_MOVIE_ID = -1;
@@ -37,18 +47,26 @@ public class MovieRepository {
     private @interface SortOrder {
         int POPULARITY = 0;
         int TOP_RATED = 1;
+        int FAVORITE = 2;
     }
 
     private final TMDBService tmdbService;
     private final PreferenceManager preferenceManager;
+    private final ContentResolver contentResolver;
+    private final Executor executor;
+    private final Handler handler;
     private List<Movie> movieList;
     private @SortOrder int sortOrder;
     private @Nullable Call<?> call;
 
     @Inject
-    MovieRepository(TMDBService tmdbService, PreferenceManager preferenceManager) {
+    MovieRepository(TMDBService tmdbService, PreferenceManager preferenceManager,
+                    ContentResolver contentResolver, Executor executor, @Named("MainLooper") Handler handler) {
         this.tmdbService = tmdbService;
         this.preferenceManager = preferenceManager;
+        this.contentResolver = contentResolver;
+        this.executor = executor;
+        this.handler = handler;
     }
 
     public void getPopularMovies(Callback<List<Movie>> callback) {
@@ -152,6 +170,14 @@ public class MovieRepository {
         }
     }
 
+    public void addToFavorites(Movie movie) {
+        executor.execute(new InsertFavoriteMovie(movie));
+    }
+
+    public void removeFromFavorites(Movie movie) {
+        executor.execute(new DeleteFavoriteMovie(movie));
+    }
+
     private @Nullable Movie getMovieById(int id) {
         if (movieList == null) {
             return null;
@@ -189,7 +215,8 @@ public class MovieRepository {
                     updatePosterPaths();
 
                     sortOrder = requestedSortOrder;
-                    callback.onResponse(movieList);
+
+                    executor.execute(new UpdateFavoriteStatus(movieList, callback));
                 } else {
                     callback.onError(R.string.tmdb_api_call_failure, "Could not parse received response");
                 }
@@ -278,6 +305,84 @@ public class MovieRepository {
         @Override
         public void onError(@StringRes int error, @NonNull String errorArgument) {
             callback.onError(error, errorArgument);
+        }
+    }
+
+    private class InsertFavoriteMovie implements Runnable {
+        private final Movie movie;
+
+        InsertFavoriteMovie(Movie movie) {
+            this.movie = movie;
+        }
+
+        @Override
+        public void run() {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MovieEntry.COLUMN_ID, movie.getId());
+            contentValues.put(MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+            contentValues.put(MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
+            contentValues.put(MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+            contentValues.put(MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+            contentValues.put(MovieEntry.COLUMN_TITLE, movie.getTitle());
+            contentValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
+            contentValues.put(MovieEntry.COLUMN_VOTE_COUNT, movie.getVoteCount());
+
+            contentResolver.insert(MovieEntry.CONTENT_URI, contentValues);
+        }
+    }
+
+    private class DeleteFavoriteMovie implements Runnable {
+        private final int movieId;
+
+        DeleteFavoriteMovie(Movie movie) {
+            movieId = movie.getId();
+        }
+
+        @Override
+        public void run() {
+            contentResolver.delete(ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId), null, null);
+        }
+    }
+
+    private class UpdateFavoriteStatus implements Runnable {
+        private final List<Movie> movieList;
+        private final Callback<List<Movie>> callback;
+
+        UpdateFavoriteStatus(List<Movie> movieList, Callback<List<Movie>> callback) {
+            this.movieList = movieList;
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            Cursor cursor = MovieRepository.this.contentResolver.query(
+                    MovieEntry.CONTENT_URI,
+                    new String[] {MovieEntry.COLUMN_ID},
+                    null,
+                    null,
+                    null);
+
+            if (cursor != null) {
+                if (cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    while (!cursor.isAfterLast()) {
+                        int id = cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_ID));
+
+                        for (Movie movie : movieList) {
+                            if (movie.getId() == id) {
+                                movie.setFavorite(true);
+                                break;
+                            }
+                        }
+
+                        cursor.moveToNext();
+                    }
+                }
+
+                cursor.close();
+            }
+
+            handler.post(() -> callback.onResponse(movieList));
         }
     }
 }

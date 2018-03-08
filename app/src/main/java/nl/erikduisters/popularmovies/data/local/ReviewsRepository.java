@@ -47,14 +47,14 @@ public class ReviewsRepository {
     }
 
     private class TMDBReviewResponseCallback implements retrofit2.Callback<TMDBReviewResponse> {
-        private Callback callback;
+        private final Callback callback;
 
         TMDBReviewResponseCallback(Callback callback) {
             this.callback = callback;
         }
 
         @Override
-        public void onResponse(Call<TMDBReviewResponse> call, Response<TMDBReviewResponse> response) {
+        public void onResponse(@NonNull Call<TMDBReviewResponse> call, @NonNull Response<TMDBReviewResponse> response) {
             Timber.d("onResponse()");
 
             ReviewsRepository.this.call = null;
@@ -73,7 +73,7 @@ public class ReviewsRepository {
         }
 
         @Override
-        public void onFailure(Call<TMDBReviewResponse> call, Throwable t) {
+        public void onFailure(@NonNull Call<TMDBReviewResponse> call, @NonNull Throwable t) {
             Timber.d("onFailure()");
 
             ReviewsRepository.this.call = null;
