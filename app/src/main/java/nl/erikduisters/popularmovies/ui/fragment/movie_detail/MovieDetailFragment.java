@@ -182,7 +182,6 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     }
 
     private void renderMovie(@NonNull Movie movie) {
-        //TODO: listener and TextView to show loading failed
         GlideApp.with(context)
                 .load(movie.getPosterPath())
                 .into(poster);
