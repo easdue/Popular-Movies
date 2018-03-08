@@ -86,7 +86,7 @@ public class MovieDetailFragmentViewModel extends ViewModel {
         trailerRepository.getTrailers(movieId, new TrailerRepository.Callback() {
             @Override
             public void onResponse(@NonNull List<Video> trailers) {
-                trailerViewState.setValue(TrailerViewState.getSuccessState(trailers));
+                trailerViewState.setValue(TrailerViewState.getSuccessState(trailers, trailers.isEmpty() ? R.string.no_trailers_available : 0));
             }
 
             @Override

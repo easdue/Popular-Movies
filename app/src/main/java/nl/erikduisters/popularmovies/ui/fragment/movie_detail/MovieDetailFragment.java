@@ -203,8 +203,14 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         }
 
         if (viewState.status == Status.SUCCESS) {
-            trailerAdapter.setTrailerList(viewState.trailerList);
-            trailersProgressGroup.setVisibility(View.GONE);
+            if (viewState.emptyTrailerListMessage != 0) {
+                trailersProgressBar.setVisibility(View.GONE);
+                trailersProgressMessage.setText(viewState.emptyTrailerListMessage);
+                trailersProgressGroup.setVisibility(View.VISIBLE);
+            } else {
+                trailerAdapter.setTrailerList(viewState.trailerList);
+                trailersProgressGroup.setVisibility(View.GONE);
+            }
 
             if (scrollViewY != -1) {
                 contentGroup.post(new Runnable() {

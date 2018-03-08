@@ -47,26 +47,28 @@ interface MovieDetailFragmentViewState {
     final class TrailerViewState implements MovieDetailFragmentViewState {
         final @Status int status;
         final @Nullable List<Video> trailerList;
+        final @StringRes int emptyTrailerListMessage;
         final @StringRes int errorLabel;
         final @NonNull String errorArgument;
 
-        private TrailerViewState(@Status int status, @Nullable List<Video> trailers, @StringRes int errorLabel, @NonNull String errorArgument) {
+        private TrailerViewState(@Status int status, @Nullable List<Video> trailers, @StringRes int emptyTrailerListMessage, @StringRes int errorLabel, @NonNull String errorArgument) {
             this.status = status;
             this.trailerList = trailers;
+            this.emptyTrailerListMessage = emptyTrailerListMessage;
             this.errorLabel = errorLabel;
             this.errorArgument = errorArgument;
         }
 
         static TrailerViewState getErrorState(@StringRes int errorLabel, @NonNull String errorArgument) {
-            return new TrailerViewState(Status.ERROR, null, errorLabel, errorArgument);
+            return new TrailerViewState(Status.ERROR, null, 0, errorLabel, errorArgument);
         }
 
         static TrailerViewState getLoadingState() {
-            return new TrailerViewState(Status.LOADING, null, 0, "");
+            return new TrailerViewState(Status.LOADING, null, 0, 0, "");
         }
 
-        static TrailerViewState getSuccessState(@NonNull List<Video> trailers) {
-            return new TrailerViewState(Status.SUCCESS, trailers, 0, "");
+        static TrailerViewState getSuccessState(@NonNull List<Video> trailers, @StringRes int emptyTrailerListMessage) {
+            return new TrailerViewState(Status.SUCCESS, trailers, emptyTrailerListMessage, 0, "");
         }
     }
 
