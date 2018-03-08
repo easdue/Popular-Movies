@@ -7,9 +7,12 @@
     <string name="loading">Loading&#8230;</string>
     <string name="loading_failed">Loading Failed!</string>
     <string name="sort_order">Sort Order</string>
+    <string name="favorites">Favorites</string>
     <string name="highest_rated">Highest Rated</string>
     <string name="most_popular">Most Popular</string>
-    <string name="prefs_sort_by_highest_rated">Sort by Highest Rated</string>
+    <string name="prefs_sort_order" translatable="false">sort_order</string>
+    <string name="prefs_tmdb_configuration" translatable="false">tmdb_configuration</string>
+    <string name="prefs_tmdb_configuration_read_date" translatable="false">tmdb_configuration_read_data</string>
     <string name="tmdb_api_call_failure">TMDB API Call Failure: %s</string>
     <string name="release_date">Release Date:</string>
     <string name="number_of_votes">Number of Votes:</string>
@@ -28,4 +31,5 @@
     <string name="cannot_start_activity_to_view_trailer">Cannot start activity to view trailer</string>
     <string name="author">Author:</string>
     <string name="content_authority">nl.erikduisters.popularmovies</string>
+    <string name="no_favorites_movies_yet">You don\'t have any favorite movies yet</string>
 </resources>

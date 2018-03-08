@@ -5,13 +5,11 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Handler;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +24,7 @@ import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.database.MovieContract.MovieEntry;
 import nl.erikduisters.popularmovies.data.model.Configuration;
 import nl.erikduisters.popularmovies.data.model.Movie;
+import nl.erikduisters.popularmovies.data.model.SortOrder;
 import nl.erikduisters.popularmovies.data.model.TMDBMovieResponse;
 import nl.erikduisters.popularmovies.data.remote.TMDBService;
 import retrofit2.Call;
@@ -41,14 +40,6 @@ import timber.log.Timber;
 @Singleton
 public class MovieRepository {
     public static final int INVALID_MOVIE_ID = -1;
-
-    @IntDef({SortOrder.POPULARITY, SortOrder.TOP_RATED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface SortOrder {
-        int POPULARITY = 0;
-        int TOP_RATED = 1;
-        int FAVORITE = 2;
-    }
 
     private final TMDBService tmdbService;
     private final PreferenceManager preferenceManager;
@@ -69,16 +60,9 @@ public class MovieRepository {
         this.handler = handler;
     }
 
-    public void getPopularMovies(Callback<List<Movie>> callback) {
-        getMoviesBySortOrder(SortOrder.POPULARITY, callback);
-    }
-
-    public void getTopRatedMovies(Callback<List<Movie>> callback) {
-        getMoviesBySortOrder(SortOrder.TOP_RATED, callback);
-    }
-
-    private void getMoviesBySortOrder(@SortOrder int sortOrder, Callback<List<Movie>> callback) {
-        Timber.d("getMoviesBySortOrder(%s)", sortOrder == SortOrder.TOP_RATED ? "TopRated" : "Popularity");
+    public void getMoviesBySortOrder(@SortOrder int sortOrder, Callback<List<Movie>> callback) {
+        Timber.d("getMoviesBySortOrder(%s)", sortOrder == SortOrder.TOP_RATED ? "TopRated" :
+                sortOrder == SortOrder.POPULARITY ? "Popularity" : "Favorite");
 
         if (movieList != null && this.sortOrder == sortOrder) {
             callback.onResponse(movieList);
@@ -90,6 +74,9 @@ public class MovieRepository {
                 break;
             case SortOrder.TOP_RATED:
                 getMovies(tmdbService.getTopRatedMovies(BuildConfig.TMDB_API_KEY), new TMDBMovieResponseCallback(callback, SortOrder.TOP_RATED));
+                break;
+            case SortOrder.FAVORITE:
+                executor.execute(new LoadFavoriteMovies(sortOrder, callback));
                 break;
         }
     }
@@ -155,7 +142,7 @@ public class MovieRepository {
 
     public void getMovie(int movieId, Callback<Movie> callback) {
         if (movieList == null) {
-            @SortOrder int sortOrder = preferenceManager.getSortByHighestRated() ? SortOrder.TOP_RATED : SortOrder.POPULARITY;
+            @SortOrder int sortOrder = preferenceManager.getSortOrder();
             getMoviesBySortOrder(sortOrder, new CallbackWrapper(callback, movieId));
 
             return;
@@ -383,6 +370,57 @@ public class MovieRepository {
             }
 
             handler.post(() -> callback.onResponse(movieList));
+        }
+    }
+
+    private class LoadFavoriteMovies implements Runnable {
+        private final Callback<List<Movie>> callback;
+        private final @SortOrder int sortOrder;
+
+        LoadFavoriteMovies(@SortOrder int sortOrder, Callback<List<Movie>> callback) {
+            this.sortOrder = sortOrder;
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            Cursor cursor = contentResolver.query(MovieEntry.CONTENT_URI, null, null, null, null);
+
+            List<Movie> newMovieList = new ArrayList<>();
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+
+                while (!cursor.isAfterLast()) {
+                    newMovieList.add(getMovieFromCursor(cursor));
+
+                    cursor.moveToNext();
+                }
+                cursor.close();
+            }
+
+            handler.post(() -> {
+                MovieRepository.this.sortOrder = sortOrder;
+                MovieRepository.this.movieList = newMovieList;
+
+                callback.onResponse(newMovieList);
+            });
+        }
+
+        private Movie getMovieFromCursor(Cursor cursor) {
+            Movie movie = new Movie();
+
+            movie.setId(cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_ID)));
+            movie.setFavorite(true);
+            movie.setPosterPath(cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_POSTER_PATH)));
+            movie.setOverview(cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_OVERVIEW)));
+            movie.setPopularity(cursor.getFloat(cursor.getColumnIndex(MovieEntry.COLUMN_POPULARITY)));
+            movie.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_RELEASE_DATE)));
+            movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_TITLE)));
+            movie.setVoteAverage(cursor.getFloat(cursor.getColumnIndex(MovieEntry.COLUMN_VOTE_AVERAGE)));
+            movie.setVoteCount(cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_VOTE_COUNT)));
+
+            return movie;
         }
     }
 }

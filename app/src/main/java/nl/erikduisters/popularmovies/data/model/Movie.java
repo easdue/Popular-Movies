@@ -23,26 +23,6 @@ public class Movie {
     private float voteAverage;
     private transient boolean isFavorite;
 
-    /*TODO: remove me
-    protected Movie(Movie other) {
-        this.posterPath = other.posterPath;
-        this.adult = other.adult;
-        this.overview = other.overview;
-        this.releaseDate = other.releaseDate;
-        this.genreIds = other.genreIds;
-        this.id = other.id;
-        this.originalTitle = other.originalTitle;
-        this.originalLanguage  = other.originalLanguage;
-        this.title = other.title;
-        this.backdropPath = other.backdropPath;
-        this.popularity = other.popularity;
-        this.voteCount = other.voteCount;
-        this.video = other.video;
-        this.voteAverage = other.voteAverage;
-        this.isFavorite = other.isFavorite;
-    }
-    */
-
     public String getPosterPath() {
         return posterPath;
     }
@@ -51,30 +31,37 @@ public class Movie {
     public int getId() {
         return id;
     }
+    public void setId(int id) { this.id = id; }
 
     public String getTitle() {
         return title;
     }
+    public void setTitle(String title) { this.title = title; }
 
     public String getReleaseDate() {
         return releaseDate;
     }
+    public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
 
     public float getVoteAverage() {
         return voteAverage;
     }
+    public void setVoteAverage(float voteAverage) { this.voteAverage = voteAverage; }
 
     public int getVoteCount() {
         return voteCount;
     }
+    public void setVoteCount(int voteCount) { this.voteCount = voteCount; }
 
     public float getPopularity() {
         return popularity;
     }
+    public void setPopularity(float popularity) { this.popularity = popularity; }
 
     public String getOverview() {
         return overview;
     }
+    public void setOverview(String overview) { this.overview = overview; }
 
     public boolean isFavorite() { return isFavorite; }
     public void setFavorite(boolean isFavorite) { this.isFavorite = isFavorite; }

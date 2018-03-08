@@ -116,11 +116,17 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         invalidateOptionsMenu();
 
         if (viewState.status == Status.SUCCESS) {
+            recyclerView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
 
             layoutManager.setSpanCount(viewModel.getSpanCount());
             movieAdapter.setMovieList(viewState.movieList);
+
+            if (viewState.emptyMovieListText != 0) {
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(viewState.emptyMovieListText);
+            }
 
             if (layoutManagerState != null) {
                 layoutManager.onRestoreInstanceState(layoutManagerState);
@@ -129,12 +135,14 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         }
 
         if (viewState.status == Status.LOADING) {
+            recyclerView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
             textView.setVisibility(View.VISIBLE);
             textView.setText(R.string.loading);
         }
 
         if (viewState.status == Status.ERROR) {
+            recyclerView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.GONE);
             textView.setVisibility(View.VISIBLE);
             textView.setText(getString(viewState.errorLabel, viewState.errorArgument));
@@ -172,6 +180,7 @@ public class MovieListFragment extends BaseFragment<MovieListFragmentViewModel> 
         switch (item.getItemId()) {
             case R.id.menu_highestRated:
             case R.id.menu_mostPopular:
+            case R.id.menu_favorites:
                 viewModel.onMenuItemClicked(item.getItemId());
                 return true;
             default:

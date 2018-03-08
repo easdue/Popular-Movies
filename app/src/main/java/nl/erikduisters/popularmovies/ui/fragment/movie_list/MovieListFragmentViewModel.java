@@ -18,6 +18,7 @@ import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.local.MovieRepository;
 import nl.erikduisters.popularmovies.data.local.PreferenceManager;
 import nl.erikduisters.popularmovies.data.model.Movie;
+import nl.erikduisters.popularmovies.data.model.SortOrder;
 import nl.erikduisters.popularmovies.ui.activity.movie_detail.MovieDetailActivity;
 import nl.erikduisters.popularmovies.util.MyMenuItem;
 import timber.log.Timber;
@@ -26,6 +27,7 @@ import timber.log.Timber;
  * Created by Erik Duisters on 19-02-2018.
  */
 
+//TODO: Show you don't have any favorites yet if there are none
 @Singleton
 public class MovieListFragmentViewModel extends AndroidViewModel {
     private final MovieRepository movieRepository;
@@ -47,14 +49,15 @@ public class MovieListFragmentViewModel extends AndroidViewModel {
 
         builder = new MovieListFragmentViewState.MovieViewState.Builder();
 
-        boolean sortByHighestRated = preferenceManager.getSortByHighestRated();
+        @SortOrder int sortOrder = preferenceManager.getSortOrder();
 
         optionsMenu = new ArrayList<>();
         optionsMenu.add(new MyMenuItem(R.id.menu_sortOrder, true, true));
+        optionsMenu.add(new MyMenuItem(R.id.menu_favorites, true, true));
         optionsMenu.add(new MyMenuItem(R.id.menu_highestRated, true, true));
         optionsMenu.add(new MyMenuItem(R.id.menu_mostPopular, true, true));
 
-        updateOptionsMenu(sortByHighestRated);
+        updateOptionsMenu(sortOrder);
 
         builder.setOptionsMenu(optionsMenu);
         builder.setLoadingStatus();
@@ -66,56 +69,63 @@ public class MovieListFragmentViewModel extends AndroidViewModel {
 
         callback = new Callback();
 
-        getMovies(sortByHighestRated);
+        movieRepository.getMoviesBySortOrder(sortOrder, callback);
     }
 
     LiveData<MovieListFragmentViewState.MovieViewState> getMovieViewState() { return movieViewState; }
     LiveData<MovieListFragmentViewState.StartActivityViewState> getStartActivityViewState() { return startActivityViewState; }
 
-    private void updateOptionsMenu(boolean sortByHighestRated) {
+    private void updateOptionsMenu(@SortOrder int sortOrder) {
         for (MyMenuItem item : optionsMenu) {
+            if (item.id == R.id.menu_favorites) {
+                item.checked = sortOrder == SortOrder.FAVORITE;
+            }
             if (item.id == R.id.menu_highestRated) {
-                item.checked = sortByHighestRated;
+                item.checked = sortOrder == SortOrder.TOP_RATED;
             }
 
             if (item.id == R.id.menu_mostPopular) {
-                item.checked = !sortByHighestRated;
+                item.checked = sortOrder == SortOrder.POPULARITY;
             }
-        }
-    }
-
-    private void getMovies(boolean sortByHighestRated) {
-        if (sortByHighestRated) {
-            movieRepository.getTopRatedMovies(callback);
-        } else {
-            movieRepository.getPopularMovies(callback);
         }
     }
 
     void onMenuItemClicked(@IdRes int menuId) {
-        boolean sortByHighestRated = preferenceManager.getSortByHighestRated();
+        @SortOrder int currentSortOrder = preferenceManager.getSortOrder();
 
-        if ((sortByHighestRated && menuId == R.id.menu_highestRated)
-                || (!sortByHighestRated && menuId == R.id.menu_mostPopular)) {
+        @SortOrder int newSortOrder = menuIdToSortorder(menuId, currentSortOrder);
+
+        if (newSortOrder == currentSortOrder) {
             Timber.d("Not changing sort order it is already as requested");
             return;
         }
 
+        Timber.d("Changing sort order to: %s" , newSortOrder == SortOrder.TOP_RATED ? "Highest Rated" :
+                newSortOrder == SortOrder.POPULARITY ? "Popularity" : "Favorite");
 
-        sortByHighestRated = !sortByHighestRated;
+        preferenceManager.setSortOrder(newSortOrder);
 
-        Timber.d("Changing sort order to: %s" , sortByHighestRated ? "Highest Rated" : "Popularity");
-
-        preferenceManager.setSortByHighestRated(sortByHighestRated);
-
-        updateOptionsMenu(sortByHighestRated);
+        updateOptionsMenu(newSortOrder);
 
         builder.setOptionsMenu(optionsMenu);
         builder.setLoadingStatus();
 
         movieViewState.setValue(builder.build());
 
-        getMovies(sortByHighestRated);
+        movieRepository.getMoviesBySortOrder(newSortOrder, callback);
+    }
+
+    private @SortOrder int menuIdToSortorder(int menuId, @SortOrder int fallbackSortOrder) {
+        switch (menuId) {
+            case R.id.menu_favorites:
+                return SortOrder.FAVORITE;
+            case R.id.menu_highestRated:
+                return SortOrder.TOP_RATED;
+            case R.id.menu_mostPopular:
+                return SortOrder.POPULARITY;
+            default:
+                return fallbackSortOrder;
+        }
     }
 
     public int getSpanCount() {
@@ -133,7 +143,14 @@ public class MovieListFragmentViewModel extends AndroidViewModel {
     private class Callback implements MovieRepository.Callback<List<Movie>> {
         @Override
         public void onResponse(@NonNull List<Movie> movieList) {
-            builder.setSuccessStatus(movieList);
+            @SortOrder int sortOrder = preferenceManager.getSortOrder();
+            @StringRes int emptyListResId = 0;
+
+            if (movieList.size() == 0 && sortOrder == SortOrder.FAVORITE) {
+                emptyListResId = R.string.no_favorites_movies_yet;
+            }
+
+            builder.setSuccessStatus(movieList, emptyListResId);
 
             movieViewState.setValue(builder.build());
         }

@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 
 import nl.erikduisters.popularmovies.R;
 import nl.erikduisters.popularmovies.data.model.Configuration;
+import nl.erikduisters.popularmovies.data.model.SortOrder;
 import nl.erikduisters.popularmovies.di.ApplicationContext;
 
 /**
@@ -22,9 +23,9 @@ import nl.erikduisters.popularmovies.di.ApplicationContext;
 
 @Singleton
 public class PreferenceManager {
-    private final static String KEY_SORT_BY_HIGHEST_RATED = "sort_by_highest_rated";
-    private final static String KEY_TMDB_CONFIGURATION = "tmdb_configuration";
-    private final static String KEY_TMDB_CONFIGURATION_READ_DATE = "tmdb_configuration_read_date";
+    private final String KEY_SORT_ORDER;
+    private final String KEY_TMDB_CONFIGURATION;
+    private final String KEY_TMDB_CONFIGURATION_READ_DATE;
 
     private final SharedPreferences sharedPreferences;
     private final Gson gson;
@@ -34,16 +35,20 @@ public class PreferenceManager {
         android.preference.PreferenceManager.setDefaultValues(ctx, R.xml.preferences, true);
         sharedPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
         this.gson = gson;
+
+        KEY_SORT_ORDER = ctx.getString(R.string.prefs_sort_order);
+        KEY_TMDB_CONFIGURATION = ctx.getString(R.string.prefs_tmdb_configuration);
+        KEY_TMDB_CONFIGURATION_READ_DATE = ctx.getString(R.string.prefs_tmdb_configuration_read_date);
     }
 
-    public boolean getSortByHighestRated() {
-        return sharedPreferences.getBoolean(KEY_SORT_BY_HIGHEST_RATED, false);
+    public @SortOrder int getSortOrder() {
+        return sharedPreferences.getInt(KEY_SORT_ORDER, SortOrder.POPULARITY);
     }
 
-    public void setSortByHighestRated(boolean sortByHighestRated) {
+    public void setSortOrder(@SortOrder int sortOrder) {
         sharedPreferences
                 .edit()
-                .putBoolean(KEY_SORT_BY_HIGHEST_RATED, sortByHighestRated)
+                .putInt(KEY_SORT_ORDER, sortOrder)
                 .apply();
     }
 

@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-        android:id="@+id/prefsSortByHighestRated"
-        android:defaultValue="false"
-        android:key="@string/prefs_sort_by_highest_rated"
+    <Preference
+        android:id="@+id/prefsSortOrder"
+        android:defaultValue="0"
+        android:key="@string/prefs_sort_order"
+        android:visibility="invisible"/>
+
+    <Preference
+        android:id="@+id/prefsTMDbConfiguration"
+        android:key="@string/prefs_tmdb_configuration"
+        android:visibility="invisible"/>
+
+    <Preference
+        android:id="@+id/prefsTMDbConfigurationReadDate"
+        android:key="@string/prefs_tmdb_configuration_read_date"
         android:visibility="invisible"/>
 </PreferenceScreen>

@@ -21,6 +21,7 @@ public interface MovieListFragmentViewState {
     final class MovieViewState implements MovieListFragmentViewState {
         final @Status int status;
         final @NonNull List<Movie> movieList;
+        final @StringRes int emptyMovieListText;
         final @StringRes int errorLabel;
         final @NonNull String errorArgument;
         final List<MyMenuItem> optionsMenu;
@@ -28,6 +29,7 @@ public interface MovieListFragmentViewState {
         MovieViewState(Builder builder) {
             status = builder.status;
             movieList = builder.movieList;
+            emptyMovieListText = builder.emptyMovieListText;
             errorLabel = builder.errorLabel;
             errorArgument = builder.errorArgument;
             optionsMenu = builder.optionsMenu;
@@ -36,6 +38,7 @@ public interface MovieListFragmentViewState {
         public static final class Builder {
             private int status;
             private @NonNull List<Movie> movieList;
+            private @StringRes int emptyMovieListText;
             private int errorLabel;
             private @NonNull String errorArgument;
             private @NonNull List<MyMenuItem> optionsMenu;
@@ -49,6 +52,7 @@ public interface MovieListFragmentViewState {
             public Builder(@NonNull MovieViewState from) {
                 this.status = from.status;
                 this.movieList = from.movieList;
+                this.emptyMovieListText = from.emptyMovieListText;
                 this.errorLabel = from.errorLabel;
                 this.errorArgument = from.errorArgument;
                 this.optionsMenu = from.optionsMenu;
@@ -71,9 +75,10 @@ public interface MovieListFragmentViewState {
                 this.optionsMenu = optionsMenu;
             }
 
-            void setSuccessStatus(List<Movie> movieList) {
+            void setSuccessStatus(List<Movie> movieList, @StringRes int emptyMovieListText) {
                 this.status = Status.SUCCESS;
                 this.movieList = movieList;
+                this.emptyMovieListText = emptyMovieListText;
                 this.errorLabel = 0;
                 this.errorArgument = "";
             }
