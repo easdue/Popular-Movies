@@ -1,6 +1,7 @@
 package nl.erikduisters.popularmovies.ui.fragment.movie_reviews;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,12 +26,14 @@ import static android.view.View.GONE;
 
 public class MovieReviewsFragment extends BaseFragment<MovieReviewsFragmentViewModel> {
     private static final String KEY_MOVIE_ID = "MovieId";
+    private static final String KEY_LAYOUT_MANAGER_STATE = "LayoutManagerState";
 
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.progressMessage) TextView progressMessage;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
     private final ReviewAdapter reviewAdapter;
+    private Parcelable layoutManagerState;
 
     public MovieReviewsFragment() {
         reviewAdapter = new ReviewAdapter();
@@ -57,6 +60,13 @@ public class MovieReviewsFragment extends BaseFragment<MovieReviewsFragmentViewM
 
         viewModel.setMovieId(args == null ? MovieRepository.INVALID_MOVIE_ID :
                 getArguments().getInt(KEY_MOVIE_ID, MovieRepository.INVALID_MOVIE_ID));
+
+        if (savedInstanceState != null) {
+            MovieReviewsFragmentViewState viewState = viewModel.getReviewsViewState().getValue();
+            if (viewState == null || viewState.status == Status.LOADING) {
+                layoutManagerState = savedInstanceState.getParcelable(KEY_LAYOUT_MANAGER_STATE);
+            }
+        }
     }
 
     @Nullable
@@ -109,6 +119,18 @@ public class MovieReviewsFragment extends BaseFragment<MovieReviewsFragmentViewM
             }
 
             reviewAdapter.setReviewList(viewState.reviewList);
+
+            if (layoutManagerState != null) {
+                recyclerView.getLayoutManager().onRestoreInstanceState(layoutManagerState);
+                layoutManagerState = null;
+            }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
     }
 }

@@ -37,6 +37,7 @@ import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmen
  * Created by Erik Duisters on 21-02-2018.
  */
 
+//TODO: implement sharing of 1st trailer
 public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> implements TrailerAdapter.OnItemClickListener {
     private final static String KEY_MOVIE_ID = "MovieID";
     private final static String KEY_SCROLL_Y = "ScrollY";
