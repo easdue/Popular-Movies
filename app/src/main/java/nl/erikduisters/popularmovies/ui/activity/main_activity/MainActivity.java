@@ -102,10 +102,10 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
 
         if (dialog == null) {
             dialog = AboutDialog.newInstance();
+            dialog.show(getSupportFragmentManager(), TAG_ABOUT_DIALOG);
         }
 
         dialog.setListener(this);
-        dialog.show(getSupportFragmentManager(), TAG_ABOUT_DIALOG);
     }
 
     @Override
