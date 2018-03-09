@@ -76,7 +76,8 @@ public class MovieDetailFragmentViewModel extends ViewModel {
                 @Override
                 public void onResponse(@NonNull Movie movie) {
                     movieViewState.setValue(MovieViewState.getSuccessState(movie));
-                    trailerViewState.setValue(TrailerViewState.getLoadingState());
+                    optionsMenu.get(0).visible = false;
+                    trailerViewState.setValue(TrailerViewState.getLoadingState(optionsMenu));
                     loadTrailers(movie.getId());
                 }
 
@@ -99,7 +100,9 @@ public class MovieDetailFragmentViewModel extends ViewModel {
 
             @Override
             public void onError(@StringRes int error, @NonNull String errorArgument) {
-                trailerViewState.setValue(TrailerViewState.getErrorState(error, errorArgument));
+                optionsMenu.get(0).visible = false;
+
+                trailerViewState.setValue(TrailerViewState.getErrorState(error, errorArgument, optionsMenu));
             }
         });
     }

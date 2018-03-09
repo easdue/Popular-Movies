@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nl.erikduisters.popularmovies.data.model.Movie;
@@ -56,7 +55,7 @@ interface MovieDetailFragmentViewState {
         final @NonNull List<MyMenuItem> optionsMenu;
 
         private TrailerViewState(@Status int status, @Nullable List<Video> trailers, @StringRes int emptyTrailerListMessage,
-                                 @StringRes int errorLabel, @NonNull String errorArgument, List<MyMenuItem> optionsMenu) {
+                                 @StringRes int errorLabel, @NonNull String errorArgument, @NonNull List<MyMenuItem> optionsMenu) {
             this.status = status;
             this.trailerList = trailers;
             this.emptyTrailerListMessage = emptyTrailerListMessage;
@@ -65,12 +64,12 @@ interface MovieDetailFragmentViewState {
             this.optionsMenu = optionsMenu;
         }
 
-        static TrailerViewState getErrorState(@StringRes int errorLabel, @NonNull String errorArgument) {
-            return new TrailerViewState(Status.ERROR, null, 0, errorLabel, errorArgument, new ArrayList<>());
+        static TrailerViewState getErrorState(@StringRes int errorLabel, @NonNull String errorArgument, @NonNull List<MyMenuItem> optionsMenu) {
+            return new TrailerViewState(Status.ERROR, null, 0, errorLabel, errorArgument, optionsMenu);
         }
 
-        static TrailerViewState getLoadingState() {
-            return new TrailerViewState(Status.LOADING, null, 0, 0, "", new ArrayList<>());
+        static TrailerViewState getLoadingState(@NonNull List<MyMenuItem> optionsMenu) {
+            return new TrailerViewState(Status.LOADING, null, 0, 0, "", optionsMenu);
         }
 
         static TrailerViewState getSuccessState(@NonNull List<Video> trailers,
