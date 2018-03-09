@@ -35,4 +35,7 @@
     <string name="no_trailers_available">No trailers available</string>
     <string name="no_reviews_available">No reviews available</string>
     <string name="share">Share</string>
+    <string name="favorite_this_movie">Favorite this movie</string>
+    <string name="trailer">Trailer</string>
+    <string name="watch_trailer">Watch trailer</string>
 </resources>

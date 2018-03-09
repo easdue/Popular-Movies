@@ -170,6 +170,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
+                    android:contentDescription="@string/favorite_this_movie"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/releaseDate"
                     app:layout_constraintTop_toTopOf="@+id/releaseDate"

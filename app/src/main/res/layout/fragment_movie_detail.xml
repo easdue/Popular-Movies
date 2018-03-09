@@ -73,6 +73,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/btn_small"
+                android:contentDescription="@string/favorite_this_movie"
                 app:layout_constraintBottom_toTopOf="@+id/releaseDateLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/poster"

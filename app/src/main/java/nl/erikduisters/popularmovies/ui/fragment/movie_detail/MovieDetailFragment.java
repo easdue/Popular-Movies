@@ -184,11 +184,6 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         provider.setShareIntent(videoShareIntent);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
     private void render(@Nullable MovieViewState viewState) {
         if (viewState == null) {
             return;
@@ -259,12 +254,9 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
             }
 
             if (scrollViewY != -1) {
-                contentGroup.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        contentGroup.scrollTo(0, scrollViewY);
-                        scrollViewY = -1;
-                    }
+                contentGroup.post(() -> {
+                    contentGroup.scrollTo(0, scrollViewY);
+                    scrollViewY = -1;
                 });
             }
 
