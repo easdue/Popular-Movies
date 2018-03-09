@@ -1,5 +1,6 @@
 package nl.erikduisters.popularmovies.data.model;
 
+import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 
@@ -14,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public class Video {
     private static final String THUMBNAIL_URL = "https://img.youtube.com/vi/%s/mqdefault.jpg";
+    private static final String YOUTUBE_URI="https://www.youtube.com/watch?v=%s";
 
     @IntDef({Size.SIZE360P, Size.SIZE480P, Size.SIZE720P, Size.SIZE1080P})
     @Retention(RetentionPolicy.RUNTIME)
@@ -46,4 +48,5 @@ public class Video {
     public String getThumbnailUrl() { return String.format(THUMBNAIL_URL, key); }
     public boolean isTrailer() { return type.equals(Type.TYPE_TRAILER); }
     public String getKey() { return key; }
+    public Uri getVideoUri() { return Uri.parse(String.format(YOUTUBE_URI, key)); }
 }

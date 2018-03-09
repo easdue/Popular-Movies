@@ -2,14 +2,20 @@ package nl.erikduisters.popularmovies.ui.fragment.movie_detail;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,6 +25,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -32,12 +40,13 @@ import nl.erikduisters.popularmovies.glide.GlideApp;
 import nl.erikduisters.popularmovies.ui.BaseFragment;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.MovieViewState;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.TrailerViewState;
+import nl.erikduisters.popularmovies.util.MenuUtil;
+import nl.erikduisters.popularmovies.util.MyMenuItem;
 
 /**
  * Created by Erik Duisters on 21-02-2018.
  */
 
-//TODO: implement sharing of 1st trailer
 public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewModel> implements TrailerAdapter.OnItemClickListener {
     private final static String KEY_MOVIE_ID = "MovieID";
     private final static String KEY_SCROLL_Y = "ScrollY";
@@ -66,6 +75,8 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     private Context context;
     private int scrollViewY;
     private Parcelable trailerLayoutManagerState;
+    @NonNull private List<MyMenuItem> optionsMenu;
+    private Intent videoShareIntent;
 
     public static MovieDetailFragment newInstance(int movieId) {
         MovieDetailFragment fragment = new MovieDetailFragment();
@@ -83,6 +94,9 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         trailerAdapter.setOnItemClickListener(this);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         scrollViewY = -1;
+
+        videoShareIntent = new Intent(Intent.ACTION_SEND);
+        videoShareIntent.setType("text/plain");
     }
 
     @Override
@@ -95,6 +109,9 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+        optionsMenu = new ArrayList<>();
 
         viewModel.getMovieViewState().observe(this, this::render);
         viewModel.getTrailerViewState().observe(this, this::render);
@@ -148,6 +165,30 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         return MovieDetailFragmentViewModel.class;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.movie_detail_fragment, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuUtil.updateMenu(menu, optionsMenu);
+
+        MenuItem shareItem = menu.findItem(R.id.menu_share);
+
+        ShareActionProvider provider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        provider.setShareIntent(videoShareIntent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
     private void render(@Nullable MovieViewState viewState) {
         if (viewState == null) {
             return;
@@ -195,12 +236,17 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
         numberOfVotes.setText(String.valueOf(movie.getVoteCount()));
         popularity.setText(String.format(Locale.getDefault(), "%.2f", movie.getPopularity()));
         overview.setText(movie.getOverview());
+
+        videoShareIntent.putExtra(Intent.EXTRA_SUBJECT, movie.getTitle() + " Trailer");
     }
 
     private void render(@Nullable TrailerViewState viewState) {
         if (viewState == null) {
             return;
         }
+
+        optionsMenu = viewState.optionsMenu;
+        invalidateOptionsMenu();
 
         if (viewState.status == Status.SUCCESS) {
             if (viewState.emptyTrailerListMessage != 0) {
@@ -225,6 +271,12 @@ public class MovieDetailFragment extends BaseFragment<MovieDetailFragmentViewMod
             if (trailerLayoutManagerState != null) {
                 layoutManager.onRestoreInstanceState(trailerLayoutManagerState);
                 trailerLayoutManagerState = null;
+            }
+
+            if (!viewState.trailerList.isEmpty()) {
+                Video video = viewState.trailerList.get(0);
+
+                videoShareIntent.putExtra(Intent.EXTRA_TEXT, video.getVideoUri().toString());
             }
         }
 

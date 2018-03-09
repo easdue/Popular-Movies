@@ -6,12 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.erikduisters.popularmovies.data.model.Movie;
 import nl.erikduisters.popularmovies.data.model.Status;
 import nl.erikduisters.popularmovies.data.model.Video;
 import nl.erikduisters.popularmovies.ui.fragment.movie_list.MovieListFragmentViewState;
+import nl.erikduisters.popularmovies.util.MyMenuItem;
 
 /**
  * Created by Erik Duisters on 21-02-2018.
@@ -24,7 +26,8 @@ interface MovieDetailFragmentViewState {
         final @StringRes int errorLabel;
         final @NonNull String errorArgument;
 
-        private MovieViewState(@Status int status, @Nullable Movie movie, @StringRes int errorLabel, @NonNull String errorArgument) {
+        private MovieViewState(@Status int status, @Nullable Movie movie, @StringRes int errorLabel,
+                               @NonNull String errorArgument) {
             this.status = status;
             this.movie = movie;
             this.errorLabel = errorLabel;
@@ -50,39 +53,41 @@ interface MovieDetailFragmentViewState {
         final @StringRes int emptyTrailerListMessage;
         final @StringRes int errorLabel;
         final @NonNull String errorArgument;
+        final @NonNull List<MyMenuItem> optionsMenu;
 
-        private TrailerViewState(@Status int status, @Nullable List<Video> trailers, @StringRes int emptyTrailerListMessage, @StringRes int errorLabel, @NonNull String errorArgument) {
+        private TrailerViewState(@Status int status, @Nullable List<Video> trailers, @StringRes int emptyTrailerListMessage,
+                                 @StringRes int errorLabel, @NonNull String errorArgument, List<MyMenuItem> optionsMenu) {
             this.status = status;
             this.trailerList = trailers;
             this.emptyTrailerListMessage = emptyTrailerListMessage;
             this.errorLabel = errorLabel;
             this.errorArgument = errorArgument;
+            this.optionsMenu = optionsMenu;
         }
 
         static TrailerViewState getErrorState(@StringRes int errorLabel, @NonNull String errorArgument) {
-            return new TrailerViewState(Status.ERROR, null, 0, errorLabel, errorArgument);
+            return new TrailerViewState(Status.ERROR, null, 0, errorLabel, errorArgument, new ArrayList<>());
         }
 
         static TrailerViewState getLoadingState() {
-            return new TrailerViewState(Status.LOADING, null, 0, 0, "");
+            return new TrailerViewState(Status.LOADING, null, 0, 0, "", new ArrayList<>());
         }
 
-        static TrailerViewState getSuccessState(@NonNull List<Video> trailers, @StringRes int emptyTrailerListMessage) {
-            return new TrailerViewState(Status.SUCCESS, trailers, emptyTrailerListMessage, 0, "");
+        static TrailerViewState getSuccessState(@NonNull List<Video> trailers,
+                                                @StringRes int emptyTrailerListMessage, List<MyMenuItem> optionsMenu) {
+            return new TrailerViewState(Status.SUCCESS, trailers, emptyTrailerListMessage, 0, "", optionsMenu);
         }
     }
 
     final class StartActivityViewState implements MovieListFragmentViewState {
-        private final static String YOUTUBE_URI="https://www.youtube.com/watch?v=%s";
+        final Uri videoUri;
 
-        final String video_key;
-
-        StartActivityViewState(@NonNull String video_key) {
-            this.video_key = video_key;
+        StartActivityViewState(@NonNull Uri videoUri) {
+            this.videoUri = videoUri;
         }
 
         Intent getIntent() {
-            return new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(YOUTUBE_URI, video_key)));
+            return new Intent(Intent.ACTION_VIEW, videoUri);
         }
     }
 

@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,6 +21,7 @@ import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmen
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.StartActivityViewState;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.ToastViewState;
 import nl.erikduisters.popularmovies.ui.fragment.movie_detail.MovieDetailFragmentViewState.TrailerViewState;
+import nl.erikduisters.popularmovies.util.MyMenuItem;
 import timber.log.Timber;
 
 /**
@@ -34,6 +36,7 @@ public class MovieDetailFragmentViewModel extends ViewModel {
     private final MutableLiveData<ToastViewState> toastViewState;
     private final MovieRepository movieRepository;
     private final TrailerRepository trailerRepository;
+    private final List<MyMenuItem> optionsMenu;
 
     @Inject
     MovieDetailFragmentViewModel(MovieRepository movieRepository, TrailerRepository trailerRepository) {
@@ -48,6 +51,9 @@ public class MovieDetailFragmentViewModel extends ViewModel {
 
         this.movieRepository = movieRepository;
         this.trailerRepository = trailerRepository;
+
+        optionsMenu = new ArrayList<>();
+        optionsMenu.add(new MyMenuItem(R.id.menu_share, true, false));
     }
 
     LiveData<MovieViewState> getMovieViewState() {
@@ -86,7 +92,9 @@ public class MovieDetailFragmentViewModel extends ViewModel {
         trailerRepository.getTrailers(movieId, new TrailerRepository.Callback() {
             @Override
             public void onResponse(@NonNull List<Video> trailers) {
-                trailerViewState.setValue(TrailerViewState.getSuccessState(trailers, trailers.isEmpty() ? R.string.no_trailers_available : 0));
+                optionsMenu.get(0).visible = !trailers.isEmpty();
+
+                trailerViewState.setValue(TrailerViewState.getSuccessState(trailers, trailers.isEmpty() ? R.string.no_trailers_available : 0, optionsMenu));
             }
 
             @Override
@@ -97,7 +105,7 @@ public class MovieDetailFragmentViewModel extends ViewModel {
     }
 
     void onTrailerClicked(Video video) {
-        startActivityViewState.setValue(new StartActivityViewState(video.getKey()));
+        startActivityViewState.setValue(new StartActivityViewState(video.getVideoUri()));
     }
 
     void onActivityStarted() {
